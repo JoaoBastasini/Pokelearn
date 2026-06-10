@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from livereload import Server
 import pandas as pd
 import numpy as np
 import random
@@ -177,17 +178,27 @@ def get_challenge_formula(params, nivel_dificuldade):
 
 @app.route('/')
 def pagina_inicial():
-    # O Flask procura o template em 'templates/'
     return render_template('pagina_inicial.html')
 
 @app.route('/calculo_dano')
 def calculo_dano_page():
-    # O Flask procura o template em 'templates/minijogos/'
     return render_template('minijogos/calculo_dano.html')
 
 @app.route('/calculo_xp')
 def calculo_xp_page():
     return render_template('minijogos/calculo_xp.html')
+
+@app.route('/calculo_prob')
+def calculo_prob_page():
+    return render_template('minijogos/calculo_prob.html')
+
+@app.route('/calculo_prob_event')
+def calculo_prob_event_page():
+    return render_template('minijogos/calculo_prob_event.html')
+
+@app.route('/calculo_logic')
+def calculo_logic_page():
+    return render_template('minijogos/calculo_logic.html')
 
 # -------- Rota dos Minigames (API) --------
 
@@ -216,5 +227,10 @@ def iniciar_calculo():
 # -------- Inicialização do Servidor ---------
 
 if __name__ == '__main__':
-    # use_reloader False para evitar carregar o CSV duas vezes durante o desenvolvimento
-    app.run(debug=True, use_reloader=False)
+    server = Server(app.wsgi_app)
+    server.watch('app.py')
+    server.watch('templates/*.html')
+    server.watch('templates/**/*.html')
+    server.watch('static/*.css')
+    server.watch('static/imagens/**/*')
+    server.serve(port=5000)
