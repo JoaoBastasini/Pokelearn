@@ -1,265 +1,324 @@
-<!DOCTYPE html>
+{% extends "cabecalho.html" %}
+<!---->
+{% block extra_css %}
 
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css">
-    
-    <title>Cálculo de dano</title>
-</head>
-<body>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 
-    <svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
-        <defs>
-            <path id="img_curvada" d="M 10,180 Q 250,20 490,180" /> 
-        </defs>
-        <text class="img_titulo">
-            <textPath href="#img_curvada" startOffset="50%" textLength="480" lengthAdjust="spacingAndGlyphs">
-            Cálculo de Dano
-            </textPath>
-        </text>
-    </svg>
-    
-    <div class="container">
-        <h3 style="text-align: center;">Selecione o Nível de Dificuldade:</h3>
-        
-        <div class="botoes_nivel">
-            <button class="facil" onclick="startChallenge('facil')">FÁCIL</button>
-            <button class="medio" onclick="startChallenge('medio')">MÉDIO</button>
-            <button class="dificil" onclick="startChallenge('dificil')">DIFÍCIL</button>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css"
+/>
+
+<title>Cálculo de dano</title>
+{% endblock %}
+<!---->
+{% block content %}
+
+<svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
+  <defs>
+    <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
+  </defs>
+  <text class="img_titulo">
+    <textPath
+      href="#img_curvada"
+      startOffset="50%"
+      textLength="480"
+      lengthAdjust="spacingAndGlyphs"
+    >
+      Cálculo de Dano
+    </textPath>
+  </text>
+</svg>
+
+<div class="container">
+  <h3 style="text-align: center">Selecione o Nível de Dificuldade:</h3>
+
+  <div class="botoes_nivel">
+    <button class="facil" onclick="startChallenge('facil')">FÁCIL</button>
+    <button class="medio" onclick="startChallenge('medio')">MÉDIO</button>
+    <button class="dificil" onclick="startChallenge('dificil')">DIFÍCIL</button>
+  </div>
+
+  <div id="challenge_area" style="display: none">
+    <hr />
+    <!-- span permite que as informações sejam colocadas depois que os dados forem carregados -->
+    <h2 id="challenge_title">
+      Desafio de Dano - Nível: <span id="level_name"></span>
+    </h2>
+
+    <div class="info_box">
+      <div class="grade_stats">
+        <div>
+          <p>
+            <strong>⚔️ ATACANTE:</strong>
+            <span id="attacker_name"></span> (Nível <span id="level"></span>)
+          </p>
+          <p><strong>Tipos:</strong> <span id="attacker_types"></span></p>
+          <p class="item_stats">
+            <strong><span id="atk_stat_name"></span>:</strong>
+            <span id="atk_value"></span>
+          </p>
         </div>
-        
-        <div id="challenge_area" style="display: none;">
-            <hr>
-            <!-- span permite que as informações sejam colocadas depois que os dados forem carregados -->
-            <h2 id="challenge_title">Desafio de Dano - Nível: <span id="level_name"></span></h2>
-            
-            <div class="info_box">
-                <div class="grade_stats">
-                    <div>
-                        <p><strong>⚔️ ATACANTE:</strong> <span id="attacker_name"></span> (Nível <span id="level"></span>)</p>
-                        <p><strong>Tipos:</strong> <span id="attacker_types"></span></p>
-                        <p class="item_stats"><strong><span id="atk_stat_name"></span>:</strong> <span id="atk_value"></span></p>
-                    </div>
-                    <div>
-                        <p><strong>🛡️ DEFENSOR:</strong> <span id="defender_name"></span></p>
-                        <p><strong>Tipos:</strong> <span id="defender_types"></span></p>
-                        <p class="item_stats"><strong><span id="def_stat_name"></span>:</strong> <span id="def_value"></span></p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="info_box">
-                <p><strong>💥 Ataque:</strong> <span id="attack_type"></span> (Poder <span id="power"></span>)</p>
-                <p><strong>⭐ STAB:</strong> x<span id="stab_mod"></span></p>
-                <p><strong>📈 Eficácia de Tipo:</strong> x<span id="type_effectiveness"></span></p>
-            </div>
-            
-            <div class="formula_LaTex">
-                <h3>Fórmula: <span id="level_name_formula"></span></h3>
-                <p id="level_description" style="font-style: italic; color: #555;"></p>
-                <div id="formula_equation" style="font-size: 1.5em; margin: 10px;"></div>
-                <p id="formula_warning" style="color: #ad4e4a; font-weight: bold;"></p>
-            </div>
-
-            <div class="grupo_entrada">
-                <label for="user_answer" id="label_answer" >Sua Resposta (Dano ou Faixa [Min-Max]):</label><br>
-                <input type="text" id="user_answer" style="margin-top: 20px;" placeholder="Digite aqui">
-                <button class="botao_minijogo" onclick="checkAnswer()">Confirmar</button>
-            </div>
-            
-            <div id="result_message" class="resultado_box" style="display: none;"></div>
-            
-            <button class="botao_minijogo" style="margin-top: 20px; display: none;" id="new_challenge_btn" onclick="startChallenge(currentLevel)">Novo Desafio</button>
+        <div>
+          <p><strong>🛡️ DEFENSOR:</strong> <span id="defender_name"></span></p>
+          <p><strong>Tipos:</strong> <span id="defender_types"></span></p>
+          <p class="item_stats">
+            <strong><span id="def_stat_name"></span>:</strong>
+            <span id="def_value"></span>
+          </p>
         </div>
-
+      </div>
     </div>
 
-    <script>
-        // let para variáveis e const para constantes
+    <div class="info_box">
+      <p>
+        <strong>💥 Ataque:</strong> <span id="attack_type"></span> (Poder
+        <span id="power"></span>)
+      </p>
+      <p><strong>⭐ STAB:</strong> x<span id="stab_mod"></span></p>
+      <p>
+        <strong>📈 Eficácia de Tipo:</strong> x<span
+          id="type_effectiveness"
+        ></span>
+      </p>
+    </div>
 
-        // Variáveis globais para armazenar o estado do jogo
-        let currentLevel = null; // Nível atual ('facil', 'medio', 'dificil')
-        let correctAnswer = null; // Resposta correta (para Fácil/Médio)
-        let correctRangeMin = null; // Mínimo da faixa de dano (para Difícil)
-        let correctRangeMax = null; // Máximo da faixa de dano (para Difícil)
+    <div class="formula_LaTex">
+      <h3>Fórmula: <span id="level_name_formula"></span></h3>
+      <p id="level_description" style="font-style: italic; color: #555"></p>
+      <div id="formula_equation" style="font-size: 1.5em; margin: 10px"></div>
+      <p id="formula_warning" style="color: #ad4e4a; font-weight: bold"></p>
+    </div>
 
+    <div class="grupo_entrada">
+      <label for="user_answer" id="label_answer"
+        >Sua Resposta (Dano ou Faixa [Min-Max]):</label
+      ><br />
+      <input
+        type="text"
+        id="user_answer"
+        style="margin-top: 20px"
+        placeholder="Digite aqui"
+      />
+      <button class="botao_minijogo" onclick="checkAnswer()">Confirmar</button>
+    </div>
 
-        // Função para Capitalizar
-        function capitalize(str) {
-            if (!str) return str;
-            const lower = str.toLowerCase();
-            return lower.charAt(0).toUpperCase() + lower.slice(1);
+    <div id="result_message" class="resultado_box" style="display: none"></div>
+
+    <button
+      class="botao_minijogo"
+      style="margin-top: 20px; display: none"
+      id="new_challenge_btn"
+      onclick="startChallenge(currentLevel)"
+    >
+      Novo Desafio
+    </button>
+  </div>
+</div>
+{% endblock %}
+<!---->
+{% block extra_js %}
+<script>
+  // let para variáveis e const para constantes
+
+  // Variáveis globais para armazenar o estado do jogo
+  let currentLevel = null; // Nível atual ('facil', 'medio', 'dificil')
+  let correctAnswer = null; // Resposta correta (para Fácil/Médio)
+  let correctRangeMin = null; // Mínimo da faixa de dano (para Difícil)
+  let correctRangeMax = null; // Máximo da faixa de dano (para Difícil)
+
+  // Função para Capitalizar
+  function capitalize(str) {
+    if (!str) return str;
+    const lower = str.toLowerCase();
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
+  }
+
+  // Função para formatar tipos (ex: "fogo,voador" -> "Fogo/Voador")
+  // Separa uma string em array de strings (split)
+  // Capitaliza, e junta com " / "
+  function formatTypes(typesString) {
+    if (!typesString) return "";
+    const typesArray = typesString.split(",");
+    const capitalizedTypes = typesArray.map(capitalize);
+    return capitalizedTypes.join(" / ");
+  }
+
+  // Inicia um novo desafio, buscando os dados no backend (Flask).
+  function startChallenge(nivel) {
+    currentLevel = nivel;
+
+    // Reseta a interface
+    document.getElementById("challenge_area").style.display = "block";
+    document.getElementById("result_message").style.display = "none";
+    document.getElementById("user_answer").value = "";
+    document.getElementById("new_challenge_btn").style.display = "none";
+    document.getElementById("formula_warning").innerHTML = "";
+
+    // Fetch API
+    fetch("/api/iniciar_calculo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // Nível de dificuldade
+      body: JSON.stringify({ nivel: nivel }),
+    })
+      // Processa a resposta JSON do Flask
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.erro) {
+          // Verifica erro nos dados
+          alert(data.erro);
+          return;
         }
 
-        // Função para formatar tipos (ex: "fogo,voador" -> "Fogo/Voador")
-        // Separa uma string em array de strings (split)
-        // Capitaliza, e junta com " / "
-        function formatTypes(typesString) {
-            if (!typesString) return '';
-            const typesArray = typesString.split(',');
-            const capitalizedTypes = typesArray.map(capitalize);
-            return capitalizedTypes.join(' / ');
+        // Armazena as respostas nas variáveis globais
+        correctAnswer = data.formula.answer_for_level;
+        correctRangeMin = data.formula.range_min;
+        correctRangeMax = data.formula.range_max;
+
+        // Preenche os campos do HTML (span)
+        document.getElementById("level_name").textContent = capitalize(
+          data.formula.name,
+        );
+        document.getElementById("level_name_formula").textContent =
+          data.formula.name;
+        document.getElementById("level_description").textContent =
+          data.formula.description;
+
+        document.getElementById("attacker_name").textContent = capitalize(
+          data.battle.attacker_name,
+        );
+        document.getElementById("defender_name").textContent = capitalize(
+          data.battle.defender_name,
+        );
+        document.getElementById("level").textContent = data.battle.level;
+        document.getElementById("attacker_types").textContent = formatTypes(
+          data.battle.attacker_types.join(","),
+        );
+        document.getElementById("defender_types").textContent = formatTypes(
+          data.battle.defender_types.join(","),
+        );
+        document.getElementById("atk_stat_name").textContent =
+          data.battle.atk_stat_name;
+        document.getElementById("atk_value").textContent =
+          data.battle.atk_value;
+        document.getElementById("def_stat_name").textContent =
+          data.battle.def_stat_name;
+        document.getElementById("def_value").textContent =
+          data.battle.def_value;
+        document.getElementById("attack_type").textContent = capitalize(
+          data.battle.attack_type,
+        );
+        document.getElementById("power").textContent = data.battle.power;
+        document.getElementById("stab_mod").textContent = data.battle.stab_mod;
+        document.getElementById("type_effectiveness").textContent =
+          data.battle.type_effectiveness;
+
+        // Coloca o label adequado
+        const labelAnswer = document.getElementById("label_answer");
+        if (nivel === "dificil") {
+          labelAnswer.textContent = "Sua Resposta -> Faixa de Dano Min-Max:";
+        } else {
+          labelAnswer.textContent = "Sua Resposta (Dano):";
         }
 
-        // Inicia um novo desafio, buscando os dados no backend (Flask).
-        function startChallenge(nivel) {
-            currentLevel = nivel;
-            
-            // Reseta a interface
-            document.getElementById('challenge_area').style.display = 'block';
-            document.getElementById('result_message').style.display = 'none';
-            document.getElementById('user_answer').value = '';
-            document.getElementById('new_challenge_btn').style.display = 'none';
-            document.getElementById('formula_warning').innerHTML = '';
-            
-            // Fetch API
-            fetch('/api/iniciar_calculo', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                // Nível de dificuldade
-                body: JSON.stringify({ nivel: nivel })
-            })
-            // Processa a resposta JSON do Flask
-            .then(response => response.json())
-            .then(data => {
-                if (data.erro) { // Verifica erro nos dados
-                    alert(data.erro);
-                    return;
-                }
-
-                // Armazena as respostas nas variáveis globais
-                correctAnswer = data.formula.answer_for_level;
-                correctRangeMin = data.formula.range_min;
-                correctRangeMax = data.formula.range_max;
-
-                // Preenche os campos do HTML (span)
-                document.getElementById('level_name').textContent = capitalize(data.formula.name);
-                document.getElementById('level_name_formula').textContent = data.formula.name;
-                document.getElementById('level_description').textContent = data.formula.description;
-                
-                document.getElementById('attacker_name').textContent = capitalize(data.battle.attacker_name);
-                document.getElementById('defender_name').textContent = capitalize(data.battle.defender_name);
-                document.getElementById('level').textContent = data.battle.level;
-                document.getElementById('attacker_types').textContent = formatTypes(data.battle.attacker_types.join(','));
-                document.getElementById('defender_types').textContent = formatTypes(data.battle.defender_types.join(','));
-                document.getElementById('atk_stat_name').textContent = data.battle.atk_stat_name;
-                document.getElementById('atk_value').textContent = data.battle.atk_value;
-                document.getElementById('def_stat_name').textContent = data.battle.def_stat_name;
-                document.getElementById('def_value').textContent = data.battle.def_value;
-                document.getElementById('attack_type').textContent = capitalize(data.battle.attack_type);
-                document.getElementById('power').textContent = data.battle.power;
-                document.getElementById('stab_mod').textContent = data.battle.stab_mod;
-                document.getElementById('type_effectiveness').textContent = data.battle.type_effectiveness;
-
-                // Coloca o label adequado
-                const labelAnswer = document.getElementById('label_answer');
-                if (nivel === 'dificil') {
-                    labelAnswer.textContent = 'Sua Resposta -> Faixa de Dano Min-Max:';
-                } else {
-                    labelAnswer.textContent = 'Sua Resposta (Dano):';
-                }
-
-                // Coloca o placeholder adequado no input
-                const inputElement = document.getElementById('user_answer');
-                if (nivel === 'dificil') {
-                    inputElement.placeholder = 'Ex: 42-50';
-                } else {
-                    inputElement.placeholder = 'Ex: 50';
-                }
-
-
-                // Renderiza a fórmula com KaTeX
-                const formulaElement = document.getElementById('formula_equation');
-                katex.render(data.formula.equation_tex, formulaElement, {
-                    throwOnError: false // Não quebra se houver erro de sintaxe LaTeX
-                });
-
-                // Avisos
-                if (nivel === 'medio') {
-                    document.getElementById('formula_warning').innerHTML = 'Arredonde o valor final para baixo!';
-                } else if (nivel === 'dificil') {
-                     document.getElementById('formula_warning').innerHTML = 'Sua resposta deve ser a faixa de dano (Ex: 10-15) com Fator Aleatório: 0.85 a 1.0.';
-                }
-
-            })
-            .catch(error => {
-                console.error('Erro ao iniciar o desafio:', error);
-                alert('Erro ao carregar desafio. Verifique o console.');
-            });
+        // Coloca o placeholder adequado no input
+        const inputElement = document.getElementById("user_answer");
+        if (nivel === "dificil") {
+          inputElement.placeholder = "Ex: 42-50";
+        } else {
+          inputElement.placeholder = "Ex: 50";
         }
 
+        // Renderiza a fórmula com KaTeX
+        const formulaElement = document.getElementById("formula_equation");
+        katex.render(data.formula.equation_tex, formulaElement, {
+          throwOnError: false, // Não quebra se houver erro de sintaxe LaTeX
+        });
 
-
-        // Verifica a resposta
-        function checkAnswer() {
-            const userAnswer = document.getElementById('user_answer').value.trim();
-            const resultMessage = document.getElementById('result_message');
-            const newChallengeBtn = document.getElementById('new_challenge_btn');
-            
-            let isCorrect = false;
-
-            // Nível difícil
-            if (currentLevel === 'dificil') {
-                // Divide a string do usuário em dois números (ex: "10-15" -> ["10", "15"])
-                // Separa uma string em array de strings (split) e tira espaços em branco (trim)
-                // .map cria um novo array aplicando a função passada (trim) em cada elemento
-                const parts = userAnswer.split('-').map(p => p.trim()); 
-                if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-                    const userMin = parseInt(parts[0]); // string --> inteiro
-                    const userMax = parseInt(parts[1]);
-                    // Compara a faixa inserida e a faixa correta
-                    if (userMin === correctRangeMin && userMax === correctRangeMax) {
-                        isCorrect = true;
-                    }
-                }
-            } 
-            // Nível fácil e médio
-            else {
-                const userNumber = parseInt(userAnswer);
-                // Compara se o número inserido (inteiro) é igual à resposta correta
-                if (!isNaN(userNumber) && userNumber === correctAnswer) {
-                    isCorrect = true;
-                }
-            }
-            
-            // Mostra resultado e botão de novo desafio
-            resultMessage.style.display = 'block';
-            newChallengeBtn.style.display = 'block';
-
-            // Mensagem de resultado
-            if (isCorrect) {
-                resultMessage.className = 'resultado_box correto'; // Box de resultado + correto
-                resultMessage.innerHTML = `✅ Correto! O dano final é: <strong>${correctAnswer}</strong>.`;
-            } else {
-                resultMessage.className = 'resultado_box incorreto'; // Box de resultado + incorreto
-                // Formata a resposta correta para ser exibida
-                // If ternário: se nível difícil, mostra faixa; senão, mostra resposta exata
-                let correctDisplay = (currentLevel === 'dificil') ? `[${correctRangeMin} - ${correctRangeMax}]` : correctAnswer;
-                resultMessage.innerHTML = `❌ Incorreto! A resposta correta era: <strong>${correctDisplay}</strong>.`;
-                
-                // Dica nos níveis Médio/Difícil --> Mostra o valor base (sem stab/eficácia/aleatório)
-                if (currentLevel === 'medio' || currentLevel === 'dificil') {
-                    // Chamada separada para buscar o valor base (após a falha), se necessário
-                    fetch('/api/iniciar_calculo', { 
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ nivel: currentLevel }) 
-                    })
-                    .then(r => r.json())
-                    .then(data => {
-                        // Exibe o valor do cálculo Base (antes de aplicar STAB/Eficácia/Aleatório)
-                        // resultMessage.innerHTML += `<br>Dica: O valor base (antes de STAB/Eficácia) é aprox.: <strong>${data.battle.base_calc_no_random.toFixed(2)}</strong>`;
-                    });
-                }
-            }
+        // Avisos
+        if (nivel === "medio") {
+          document.getElementById("formula_warning").innerHTML =
+            "Arredonde o valor final para baixo!";
+        } else if (nivel === "dificil") {
+          document.getElementById("formula_warning").innerHTML =
+            "Sua resposta deve ser a faixa de dano (Ex: 10-15) com Fator Aleatório: 0.85 a 1.0.";
         }
-    </script>
-</body>
-</html>
+      })
+      .catch((error) => {
+        console.error("Erro ao iniciar o desafio:", error);
+        alert("Erro ao carregar desafio. Verifique o console.");
+      });
+  }
+
+  // Verifica a resposta
+  function checkAnswer() {
+    const userAnswer = document.getElementById("user_answer").value.trim();
+    const resultMessage = document.getElementById("result_message");
+    const newChallengeBtn = document.getElementById("new_challenge_btn");
+
+    let isCorrect = false;
+
+    // Nível difícil
+    if (currentLevel === "dificil") {
+      // Divide a string do usuário em dois números (ex: "10-15" -> ["10", "15"])
+      // Separa uma string em array de strings (split) e tira espaços em branco (trim)
+      // .map cria um novo array aplicando a função passada (trim) em cada elemento
+      const parts = userAnswer.split("-").map((p) => p.trim());
+      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        const userMin = parseInt(parts[0]); // string --> inteiro
+        const userMax = parseInt(parts[1]);
+        // Compara a faixa inserida e a faixa correta
+        if (userMin === correctRangeMin && userMax === correctRangeMax) {
+          isCorrect = true;
+        }
+      }
+    }
+    // Nível fácil e médio
+    else {
+      const userNumber = parseInt(userAnswer);
+      // Compara se o número inserido (inteiro) é igual à resposta correta
+      if (!isNaN(userNumber) && userNumber === correctAnswer) {
+        isCorrect = true;
+      }
+    }
+
+    // Mostra resultado e botão de novo desafio
+    resultMessage.style.display = "block";
+    newChallengeBtn.style.display = "block";
+
+    // Mensagem de resultado
+    if (isCorrect) {
+      resultMessage.className = "resultado_box correto"; // Box de resultado + correto
+      resultMessage.innerHTML = `✅ Correto! O dano final é: <strong>${correctAnswer}</strong>.`;
+    } else {
+      resultMessage.className = "resultado_box incorreto"; // Box de resultado + incorreto
+      // Formata a resposta correta para ser exibida
+      // If ternário: se nível difícil, mostra faixa; senão, mostra resposta exata
+      let correctDisplay =
+        currentLevel === "dificil"
+          ? `[${correctRangeMin} - ${correctRangeMax}]`
+          : correctAnswer;
+      resultMessage.innerHTML = `❌ Incorreto! A resposta correta era: <strong>${correctDisplay}</strong>.`;
+
+      // Dica nos níveis Médio/Difícil --> Mostra o valor base (sem stab/eficácia/aleatório)
+      if (currentLevel === "medio" || currentLevel === "dificil") {
+        // Chamada separada para buscar o valor base (após a falha), se necessário
+        fetch("/api/iniciar_calculo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nivel: currentLevel }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            // Exibe o valor do cálculo Base (antes de aplicar STAB/Eficácia/Aleatório)
+            // resultMessage.innerHTML += `<br>Dica: O valor base (antes de STAB/Eficácia) é aprox.: <strong>${data.battle.base_calc_no_random.toFixed(2)}</strong>`;
+          });
+      }
+    }
+  }
+</script>
+{% endblock %}
