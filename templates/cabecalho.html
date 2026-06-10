@@ -83,7 +83,9 @@
       </nav>
     </header>
 
-    <main class="conteudo">{% block content %}{% endblock %}</main>
+    <main class="conteudo">
+      {% block content %}{% endblock %} {% block extra_js %}{% endblock %}
+    </main>
 
     <script>
       document
