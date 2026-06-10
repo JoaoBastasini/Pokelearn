@@ -14,7 +14,7 @@ html {
 
 body {
   font-family: "pokemon_simples";
-  background-image: url("imagens/landscape.jpeg");
+  background-image: url("imagens/landscape.jpg");
   background-attachment: fixed; /* Mantém o gradiente fixo na viewport e garante que cubra toda a altura */
   background-size: cover; /* Garante que o gradiente cubra toda a área visível */
   min-width: 100%; /* Aplica as coisas na página visível toda, não apenas até onde tem coisa escrita */
