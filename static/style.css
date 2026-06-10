@@ -14,9 +14,8 @@ html {
 
 body {
   font-family: "pokemon_simples";
-  background: linear-gradient(to bottom, rgb(20, 145, 222), white);
+  background-image: url("imagens/landscape.jpeg");
   background-attachment: fixed; /* Mantém o gradiente fixo na viewport e garante que cubra toda a altura */
-  background-repeat: no-repeat; /* Não repete o gradiente */
   background-size: cover; /* Garante que o gradiente cubra toda a área visível */
   min-width: 100%; /* Aplica as coisas na página visível toda, não apenas até onde tem coisa escrita */
   min-height: 100vh; /* Aplica as coisas na página visível toda, não apenas até onde tem coisa escrita */
@@ -82,10 +81,16 @@ h1 {
 
   cursor: pointer; /* Faz com que o cursor mude para o "dá para clicar" */
   transition: background-color 0.2s ease; /* Faz com que a "hover" aconteça gradualmente */
+  box-shadow:
+    4px 4px 2px #000,
+    -1px -1px 1px #000,
+    1px -1px 1px #000,
+    -2px 4px 2px #000;
 }
 
 .botao_minijogo:hover {
-  opacity: 0.8; /* Deixa mais claro quando coloca o cursor */
+  background-color: rgb(255, 255, 219);
+  color: rgb(230, 172, 27);
 }
 
 .container {

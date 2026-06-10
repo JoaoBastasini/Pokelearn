@@ -19,7 +19,7 @@
   gap: 2rem;
   padding: 0 2rem;
   height: 80px;
-  background: #1a1a2e;
+  background: #142d3d;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   position: sticky;
   top: 0;
@@ -37,10 +37,15 @@
   display: flex;
   align-items: center; /* alinha internamente ao container */
   transform: translateY(-10px);
+  text-shadow:
+    4px 4px 2px #000,
+    -4px -4px 2px #000,
+    4px -4px 2px #000,
+    -4px 4px 2px #000;
 }
 
 .cabecalho__logo a:hover {
-  color: #fd3762;
+  color: #ffffff;
 }
 
 .cabecalho__nav {
