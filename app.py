@@ -52,6 +52,7 @@ def setup_battle(df):
     
     # Sorteia os níveis dos Pokémon
     level_atk = random.randint(40, 60) # Níveis em uma faixa razoável
+
     # Garante que o nível do defensor fique entre 40 e 60 e a diferença seja no máximo 10
     # level_def = random.randint(max(40, level_atk - 10), min(60, level_atk + 10))
     # Aparentemente o nível do defensor não é usado no cálculo de dano, então foi comentado, mas caso venha a calhar, está aí.
@@ -211,7 +212,39 @@ def iniciar_calculo():
         "formula": formula
     })
 
+@app.route('/api/calcular_xp', methods=['POST'])
+def calcular_xp():
+    data = request.get_json()
+    nivel_dificuldade = data.get('nivel', 'medio')
+
+    if dados_pokemon.empty:
+        return jsonify({"erro": "Dados de Pokémon não carregados"})
+
+    params = setup_xp(dados_pokemon)
     
+    # Obtém a fórmula para a dificuldade
+    formula = get_xp_formula(params, nivel_dificuldade)
+
+return jsonify({
+    '''
+  "pokemon": {
+    "name": "Pikachu",
+    "growth_group": "Rápido",
+    "current_level": 10,
+    "target_level": 20
+  },
+  "formula": {
+    "name": "Crescimento Rápido",
+    "description": "Fórmula base: E = 4L³/5. Calcule a diferença (X) entre o nível alvo e o atual.",
+    "equation_tex": "X = \\frac{4 \\times 20^3}{5} - \\frac{4 \\times 10^3}{5}"
+  },
+  "xp": {
+    "answer": 5600
+  }
+    '''
+})
+
+
 
 # -------- Inicialização do Servidor ---------
 
