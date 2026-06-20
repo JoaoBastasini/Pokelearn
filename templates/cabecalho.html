@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Pokélearn{% endblock %}</title>
+
+    <!-- CSS geral da página -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+
+    <!-- CSS exclusivo do cabeçalho -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='cabecalho_style.css') }}"
+    />
+
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <header class="cabecalho">
+      <div class="cabecalho__logo">
+        <a href="{{ url_for('pagina_inicial') }}"> Pokélearn </a>
+      </div>
+      <span>Aprenda matemática de forma divertida!</span>
+
+      <nav class="cabecalho__nav">
+        <div class="cabecalho__dropdown">
+          <button class="cabecalho__dropdown-btn" data-target="menu-pokemon">
+            Cálculo Simples <span class="cabecalho__arrow">▾</span>
+          </button>
+          <div class="cabecalho__dropdown-menu" id="menu-pokemon">
+            <a
+              href="{{ url_for('calculo_dano_page') }}"
+              class="cabecalho__dropdown-item"
+            >
+              Dano
+            </a>
+            <a
+              href="{{ url_for('calculo_xp_page') }}"
+              class="cabecalho__dropdown-item"
+            >
+              XP
+            </a>
+          </div>
+        </div>
+
+        <div class="cabecalho__dropdown">
+          <button class="cabecalho__dropdown-btn" data-target="menu-minijogos">
+            Probabilidade <span class="cabecalho__arrow">▾</span>
+          </button>
+          <div class="cabecalho__dropdown-menu" id="menu-minijogos">
+            <a
+              href="{{ url_for('calculo_prob_page') }}"
+              class="cabecalho__dropdown-item"
+            >
+              Chance de Captura
+            </a>
+            <a
+              href="{{ url_for('calculo_prob_event_page') }}"
+              class="cabecalho__dropdown-item"
+            >
+              Ocorrência de Eventos
+            </a>
+          </div>
+        </div>
+
+        <div class="cabecalho__dropdown">
+          <button class="cabecalho__dropdown-btn" data-target="menu-sobre">
+            Lógica <span class="cabecalho__arrow">▾</span>
+          </button>
+          <div class="cabecalho__dropdown-menu" id="menu-sobre">
+            <a
+              href="{{ url_for('calculo_logic_page') }}"
+              class="cabecalho__dropdown-item"
+            >
+              Qual meu tipo?</a
+            >
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="conteudo">
+      {% block content %}{% endblock %} {% block extra_js %}{% endblock %}
+    </main>
+
+    <script>
+      document
+        .querySelectorAll(".cabecalho__dropdown-btn")
+        .forEach(function (btn) {
+          btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const targetId = btn.getAttribute("data-target");
+            const menu = document.getElementById(targetId);
+            const isAberto = menu.classList.contains("aberto");
+
+            document
+              .querySelectorAll(".cabecalho__dropdown-menu")
+              .forEach((m) => m.classList.remove("aberto"));
+            document
+              .querySelectorAll(".cabecalho__dropdown-btn")
+              .forEach((b) => b.classList.remove("aberto"));
+
+            if (!isAberto) {
+              menu.classList.add("aberto");
+              btn.classList.add("aberto");
+            }
+          });
+        });
+
+      document.addEventListener("click", function () {
+        document
+          .querySelectorAll(".cabecalho__dropdown-menu")
+          .forEach((m) => m.classList.remove("aberto"));
+        document
+          .querySelectorAll(".cabecalho__dropdown-btn")
+          .forEach((b) => b.classList.remove("aberto"));
+      });
+    </script>
+  </body>
+</html>

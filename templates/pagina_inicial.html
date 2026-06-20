@@ -1,42 +1,79 @@
-<!DOCTYPE html>
-
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-
-    <!-- 
-    Chaves duplas são usadas para indicar que é código Jinja2 (template engine do Flask)
-    Executa Python/Flask antes de enviar o HTML para o navegador
-    Flask usa url_for para gerar URLs para arquivos estáticos
-    Garante que o caminho está correto independentemente de onde o app está rodando
-    Não é necessário alterar o HTML se a estrutura de pastas mudar
-    -->   
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>POKÉLEARN</title>
-</head>
-<body>
-    <!-- 
+{% extends "cabecalho.html" %}
+<section>
+  <!---->
+  {% block title %}Pokélearn{%endblock %}
+  <!---->
+  {% block content %}
+  <!-- 
     Transforma o texto em uma imgagem, para estilização de forma
     Imagem .svg distorcida, faz o arco no título para familiaridade com a logo da franquia 
     -->
-    <svg class=svg_centralizado width="400" height="150" viewBox="0 0 450 200">
-        <defs>
-            <path id="img_curvada" d="M 10,180 Q 225,20 440,180" /> 
-        </defs>
-        
-        <!-- Faz com que todas as letras caibam na imagem, sem cortar as pontas -->
-        <text class=img_titulo>
-            <textPath href="#img_curvada" startOffset="50%" textLength="440" lengthAdjust="spacingAndGlyphs">
-            POKÉLEARN
-            </textPath>
-        </text>
-    </svg>
+  <svg class="svg_centralizado" width="400" height="150" viewBox="0 0 450 200">
+    <defs>
+      <path id="img_curvada" d="M 10,180 Q 225,20 440,180" />
+    </defs>
 
-    
-    <img class="img_centralizada" src="{{ url_for('static', filename='imagens/pokeball-pokemon-svgrepo-com.svg') }}" 
-        alt="Uma Pokébola" style="width:800px;height:300px;">
-    <h3>Aprenda matemática de forma divertida</h3>
-    <a href="{{ url_for('calculo_dano_page') }}" class="botao_minijogo">Calcular Dano!</a>
-    <a href="{{ url_for('calculo_xp_page') }}" class="botao_minijogo">Calcular XP!</a>
-</body> 
-</html>
+    <!-- Faz com que todas as letras caibam na imagem, sem cortar as pontas -->
+    <text class="img_titulo">
+      <textPath
+        href="#img_curvada"
+        startOffset="50%"
+        textLength="440"
+        lengthAdjust="spacingAndGlyphs"
+      >
+        POKÉLEARN
+      </textPath>
+    </text>
+  </svg>
+
+  <img
+    class="img_centralizada"
+    src="{{ url_for('static', filename='imagens/pokeball-pokemon-svgrepo-com.svg') }}"
+    alt="Pokébola"
+    style="width: 800px; height: 300px"
+  />
+  <div class="menu_principal">
+    <h3
+      style="
+        text-shadow:
+          1px 1px 2px #000,
+          -1px -1px 2px #000,
+          1px -1px 2px #000,
+          -1px 1px 2px #000;
+        color: #ffff;
+      "
+    >
+      Aprenda matemática de forma divertida!
+    </h3>
+    <a href="{{ url_for('calculo_dano_page') }}" class="botao_minijogo"
+      >Calcular Dano!</a
+    >
+    <a href="{{ url_for('calculo_xp_page') }}" class="botao_minijogo"
+      >Calcular XP!</a
+    >
+    <a href="{{ url_for('calculo_prob_page') }}" class="botao_minijogo"
+      >Chance de Captura!</a
+    >
+    <a href="{{ url_for('calculo_prob_event_page') }}" class="botao_minijogo"
+      >Probabilidade de Eventos!</a
+    >
+    <a href="{{ url_for('calculo_logic_page') }}" class="botao_minijogo"
+      >Qual meu tipo?</a
+    >
+  </div>
+  <div
+    style="
+      text-align: center;
+      margin-top: 10%;
+      text-shadow:
+        1px 1px 2px #000,
+        -1px -1px 2px #000,
+        1px -1px 2px #000,
+        -1px 1px 2px #000;
+      color: #ffff;
+    "
+  >
+    <span>A Nintendo não apoia nem patrocina este projeto.</span>
+  </div>
+</section>
+{% endblock %}

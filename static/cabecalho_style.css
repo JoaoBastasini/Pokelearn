@@ -1,0 +1,134 @@
+/* ===========================
+   cabecalho.css
+   Estilos exclusivos do header
+   =========================== */
+
+@font-face {
+  font-family: "pokemon_titulo";
+  src: url("fonte_titulo/pokemon_solid.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "pokemon_simples";
+  src: url("fonte_corpo/pokemon_jogo.ttf") format("truetype");
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 2rem;
+  height: 80px;
+  background: #142d3d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  color: #ffffff;
+}
+
+.cabecalho__logo a {
+  font-size: 2rem;
+  font-weight: 100;
+  font-family: "pokemon_titulo", sans-serif;
+  color: rgb(249, 231, 29);
+  text-decoration: none;
+  letter-spacing: 3px;
+  line-height: 1; /* remove espaço extra da linha */
+  display: flex;
+  align-items: center; /* alinha internamente ao container */
+  transform: translateY(-10px);
+  text-shadow:
+    2px 2px 1px #000,
+    -2px -2px 1px #000,
+    2px -2px 1px #000,
+    -2px 2px 1px #000;
+}
+
+.cabecalho__logo a:hover {
+  color: #ffffff;
+}
+
+.cabecalho__nav {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+/* Dropdown */
+.cabecalho__dropdown {
+  position: relative;
+}
+
+.cabecalho__dropdown-btn {
+  background: none;
+  border: none;
+  color: #fafafa;
+  font-size: 0.9rem;
+  font-family: "pokemon_simples";
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition:
+    background 0.3s,
+    color 0.3s;
+}
+
+.cabecalho__dropdown-btn:hover,
+.cabecalho__dropdown-btn.aberto {
+  background: #0b1c27;
+  color: #ffffff;
+}
+
+.cabecalho__arrow {
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.cabecalho__dropdown-btn.aberto .cabecalho__arrow {
+  transform: rotate(180deg);
+}
+
+.cabecalho__dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 250px;
+  background: #0e202c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 999;
+}
+
+.cabecalho__dropdown-menu.aberto {
+  display: block;
+}
+
+.cabecalho__dropdown-item {
+  display: block;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  color: #a8a8c0;
+  text-decoration: none;
+  border-radius: 6px;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.cabecalho__dropdown-item:hover {
+  background: rgba(249, 231, 29, 0.15);
+  color: rgb(249, 231, 29);
+}
+
+.cabecalho__divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
+}

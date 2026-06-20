@@ -1,0 +1,30 @@
+{% extends "cabecalho.html" %}
+<!---->
+{% block extra_css %}
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<title>Cálculo de XP</title>
+
+{% endblock %}
+<!---->
+{% block content %}
+
+<section>
+  <svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
+    <defs>
+      <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
+    </defs>
+
+    <text class="img_titulo">
+      <textPath
+        href="#img_curvada"
+        startOffset="50%"
+        textLength="480"
+        lengthAdjust="spacingAndGlyphs"
+      >
+        Cálculo de XP
+      </textPath>
+    </text>
+  </svg>
+</section>
+{% endblock %}
