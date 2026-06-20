@@ -5,6 +5,13 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js"></script>
+
+<script
+  defer
+  src="{{ url_for('static', filename='js/calculadora-widget.js') }}"
+  data-calculator-src="{{ url_for('static', filename='calculadora.html') }}"
+></script>
+
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css"

@@ -235,4 +235,6 @@ if __name__ == '__main__':
     server.watch('templates/**/*.html')
     server.watch('static/*.css')
     server.watch('static/imagens/**/*')
+    server.watch('static/*.hmtl')
+    server.watch('static/js/*.js')
     server.serve(port=5000)

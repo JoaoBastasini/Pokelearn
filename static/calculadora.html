@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-page: #0d0f14;
+        --calc-body: #1b1e27;
+        --calc-body-2: #15171f;
+        --display-bg: #0a0c11;
+        --digit-bg: #2a2d38;
+        --digit-bg-hover: #34384a;
+        --op-color: #ff8a3d;
+        --equals-bg: #36e0c2;
+        --equals-bg-hover: #5cebcf;
+        --text-light: #f4f5f7;
+        --text-dim: #8b8fa3;
+        --mono: "JetBrains Mono", monospace;
+        --sans: "Inter", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-page);
+        font-family: var(--sans);
+      }
+      .calculator {
+        width: 320px;
+        background: linear-gradient(
+          160deg,
+          var(--calc-body),
+          var(--calc-body-2)
+        );
+        border-radius: 28px;
+        padding: 20px;
+        box-shadow:
+          0 30px 60px -20px rgba(0, 0, 0, 0.6),
+          inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+      .display {
+        background: var(--display-bg);
+        border-radius: 18px;
+        padding: 22px 18px 16px;
+        margin-bottom: 18px;
+        text-align: right;
+      }
+      .display .history {
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--text-dim);
+        min-height: 16px;
+        white-space: nowrap;
+        overflow-x: auto;
+      }
+      .display .current {
+        font-family: var(--mono);
+        font-size: 36px;
+        font-weight: 500;
+        color: var(--text-light);
+        white-space: nowrap;
+        overflow-x: auto;
+        margin-top: 4px;
+      }
+      .keys {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      button {
+        border: none;
+        border-radius: 14px;
+        font-family: var(--sans);
+        font-size: 18px;
+        font-weight: 600;
+        padding: 16px 0;
+        cursor: pointer;
+        color: var(--text-light);
+        background: var(--digit-bg);
+        transition:
+          transform 0.08s ease,
+          background 0.15s ease;
+      }
+      button:hover {
+        background: var(--digit-bg-hover);
+      }
+      button:active {
+        transform: scale(0.94);
+      }
+      button:focus-visible {
+        outline: 2px solid var(--equals-bg);
+        outline-offset: 2px;
+      }
+      .op {
+        background: rgba(255, 138, 61, 0.16);
+        color: var(--op-color);
+      }
+      .op:hover {
+        background: rgba(255, 138, 61, 0.26);
+      }
+      .fn {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-dim);
+      }
+      .fn:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .equals {
+        background: var(--equals-bg);
+        color: #06231d;
+        grid-row: span 2;
+      }
+      .equals:hover {
+        background: var(--equals-bg-hover);
+      }
+      .zero {
+        grid-column: span 2;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        button {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="calculator" id="calculator">
+      <div class="display">
+        <div class="history" id="history"></div>
+        <div class="current" id="current">0</div>
+      </div>
+      <div class="keys">
+        <button class="fn" data-action="clear">AC</button>
+        <button class="fn" data-action="backspace">⌫</button>
+        <button class="fn" data-action="percent">%</button>
+        <button class="op" data-action="divide">÷</button>
+
+        <button data-digit="7">7</button>
+        <button data-digit="8">8</button>
+        <button data-digit="9">9</button>
+        <button class="op" data-action="multiply">×</button>
+
+        <button data-digit="4">4</button>
+        <button data-digit="5">5</button>
+        <button data-digit="6">6</button>
+        <button class="op" data-action="subtract">−</button>
+
+        <button data-digit="1">1</button>
+        <button data-digit="2">2</button>
+        <button data-digit="3">3</button>
+        <button class="op" data-action="add">+</button>
+
+        <button class="zero" data-digit="0">0</button>
+        <button data-digit=".">.</button>
+        <button class="equals" data-action="equals">=</button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const historyEl = document.getElementById("history");
+        const currentEl = document.getElementById("current");
+        const calc = document.getElementById("calculator");
+
+        let current = "0";
+        let previous = null;
+        let operator = null;
+        let overwrite = true;
+
+        const ops = {
+          add: (a, b) => a + b,
+          subtract: (a, b) => a - b,
+          multiply: (a, b) => a * b,
+          divide: (a, b) => (b === 0 ? NaN : a / b),
+        };
+        const opSymbols = {
+          add: "+",
+          subtract: "−",
+          multiply: "×",
+          divide: "÷",
+        };
+
+        function formatNumber(n) {
+          if (!isFinite(n)) return "Erro";
+          let s = n.toString();
+          if (s.length > 12) s = parseFloat(n.toPrecision(10)).toString();
+          return s;
+        }
+
+        function updateDisplay() {
+          currentEl.textContent = current;
+          historyEl.textContent =
+            previous !== null
+              ? `${formatNumber(previous)} ${opSymbols[operator]}`
+              : "";
+        }
+
+        function inputDigit(d) {
+          if (overwrite) {
+            current = d === "." ? "0." : d;
+            overwrite = false;
+            return;
+          }
+          if (d === "." && current.includes(".")) return;
+          if (current === "0" && d !== ".") {
+            current = d;
+            return;
+          }
+          current += d;
+        }
+
+        function chooseOperator(op) {
+          if (operator && !overwrite) compute();
+          previous = parseFloat(current);
+          operator = op;
+          overwrite = true;
+        }
+
+        function compute() {
+          if (operator === null || previous === null) return;
+          const result = ops[operator](previous, parseFloat(current));
+          current = formatNumber(result);
+          operator = null;
+          previous = null;
+          overwrite = true;
+        }
+
+        function clearAll() {
+          current = "0";
+          previous = null;
+          operator = null;
+          overwrite = true;
+        }
+
+        function backspace() {
+          if (overwrite) return;
+          current = current.slice(0, -1) || "0";
+          if (current === "-") current = "0";
+        }
+
+        function percent() {
+          current = formatNumber(parseFloat(current) / 100);
+        }
+
+        calc.addEventListener("click", (e) => {
+          const btn = e.target.closest("button");
+          if (!btn) return;
+          const { digit, action } = btn.dataset;
+
+          if (digit !== undefined) inputDigit(digit);
+          else if (action === "clear") clearAll();
+          else if (action === "backspace") backspace();
+          else if (action === "percent") percent();
+          else if (action === "equals") compute();
+          else if (action in ops) chooseOperator(action);
+
+          updateDisplay();
+        });
+
+        window.addEventListener("keydown", (e) => {
+          if (e.key >= "0" && e.key <= "9") inputDigit(e.key);
+          else if (e.key === ".") inputDigit(".");
+          else if (e.key === "+") chooseOperator("add");
+          else if (e.key === "-") chooseOperator("subtract");
+          else if (e.key === "*") chooseOperator("multiply");
+          else if (e.key === "/") {
+            e.preventDefault();
+            chooseOperator("divide");
+          } else if (e.key === "Enter" || e.key === "=") compute();
+          else if (e.key === "Backspace") backspace();
+          else if (e.key === "Escape") clearAll();
+          else return;
+          updateDisplay();
+        });
+
+        updateDisplay();
+      })();
+    </script>
+  </body>
+</html>
