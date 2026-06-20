@@ -207,3 +207,6 @@ h1 {
   text-align: center;
   margin-top: 3rem;
 }
+.pokemon_img {
+  width: 350px;
+}
