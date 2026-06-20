@@ -174,6 +174,27 @@ def get_challenge_formula(params, nivel_dificuldade):
     
     return {}
 
+def setup_xp(params):
+
+    # Sorteia o Pokemon
+    poke_data = df.sample(1).reset_index().iloc[0]
+
+    name = poke_data['Name']
+    group = 
+
+    '''
+    "pokeinfo": 
+    {
+        "name": "Pikachu",
+        "growth_group": "Rápido",
+        "current_level": 10,
+        "target_level": 20
+    },
+
+        "answer": 5600
+    }
+    '''
+
 # -------- Rotas de Navegação --------
 
 @app.route('/')
@@ -220,30 +241,32 @@ def calcular_xp():
     if dados_pokemon.empty:
         return jsonify({"erro": "Dados de Pokémon não carregados"})
 
-    params = setup_xp(dados_pokemon)
+    pokeinfo = setup_xp(dados_pokemon)
     
     # Obtém a fórmula para a dificuldade
-    formula = get_xp_formula(params, nivel_dificuldade)
+    formula = get_xp_formula(pokeinfo[0], nivel_dificuldade)
 
-return jsonify({
+    return jsonify({
+        "pokemon": pokeinfo[0],
+        "formula": formula,
+        "xp": pokeinfo[1]
+    })
     '''
-  "pokemon": {
-    "name": "Pikachu",
-    "growth_group": "Rápido",
-    "current_level": 10,
-    "target_level": 20
-  },
-  "formula": {
-    "name": "Crescimento Rápido",
-    "description": "Fórmula base: E = 4L³/5. Calcule a diferença (X) entre o nível alvo e o atual.",
-    "equation_tex": "X = \\frac{4 \\times 20^3}{5} - \\frac{4 \\times 10^3}{5}"
-  },
-  "xp": {
-    "answer": 5600
-  }
+    "pokemon": {
+        "name": "Pikachu",
+        "growth_group": "Rápido",
+        "current_level": 10,
+        "target_level": 20
+    },
+    "formula": {
+        "name": "Crescimento Rápido",
+        "description": "Fórmula base: E = 4L³/5. Calcule a diferença (X) entre o nível alvo e o atual.",
+        "equation_tex": "X = \\frac{4 \\times 20^3}{5} - \\frac{4 \\times 10^3}{5}"
+    },
+    "xp": {
+        "answer": 5600
+    }
     '''
-})
-
 
 
 # -------- Inicialização do Servidor ---------
