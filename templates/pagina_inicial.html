@@ -33,7 +33,18 @@
     style="width: 800px; height: 300px"
   />
   <div class="menu_principal">
-    <h3>Aprenda matemática de forma divertida!</h3>
+    <h3
+      style="
+        text-shadow:
+          1px 1px 2px #000,
+          -1px -1px 2px #000,
+          1px -1px 2px #000,
+          -1px 1px 2px #000;
+        color: #ffff;
+      "
+    >
+      Aprenda matemática de forma divertida!
+    </h3>
     <a href="{{ url_for('calculo_dano_page') }}" class="botao_minijogo"
       >Calcular Dano!</a
     >
@@ -49,6 +60,20 @@
     <a href="{{ url_for('calculo_logic_page') }}" class="botao_minijogo"
       >Qual meu tipo?</a
     >
+  </div>
+  <div
+    style="
+      text-align: center;
+      margin-top: 10%;
+      text-shadow:
+        1px 1px 2px #000,
+        -1px -1px 2px #000,
+        1px -1px 2px #000,
+        -1px 1px 2px #000;
+      color: #ffff;
+    "
+  >
+    <span>A Nintendo não apoia nem patrocina este projeto.</span>
   </div>
 </section>
 {% endblock %}

@@ -53,6 +53,8 @@
         <div>
           <p>
             <strong>⚔️ ATACANTE:</strong>
+            <img id="attacker_img" class="pokemon_img" />
+            <br />
             <span id="attacker_name"></span> (Nível <span id="level"></span>)
           </p>
           <p><strong>Tipos:</strong> <span id="attacker_types"></span></p>
@@ -62,7 +64,12 @@
           </p>
         </div>
         <div>
-          <p><strong>🛡️ DEFENSOR:</strong> <span id="defender_name"></span></p>
+          <p>
+            <strong>🛡️ DEFENSOR:</strong>
+            <img id="defender_img" class="pokemon_img" />
+            <br />
+            <span id="defender_name"></span>
+          </p>
           <p><strong>Tipos:</strong> <span id="defender_types"></span></p>
           <p class="item_stats">
             <strong><span id="def_stat_name"></span>:</strong>
@@ -180,6 +187,16 @@
         correctRangeMin = data.formula.range_min;
         correctRangeMax = data.formula.range_max;
 
+        document.getElementById("attacker_img").src =
+          data.battle.attacker_image_url;
+        document.getElementById("attacker_img").alt = capitalize(
+          data.battle.attacker_name,
+        );
+        document.getElementById("defender_img").src =
+          data.battle.defender_image_url;
+        document.getElementById("defender_img").alt = capitalize(
+          data.battle.defender_name,
+        );
         // Preenche os campos do HTML (span)
         document.getElementById("level_name").textContent = capitalize(
           data.formula.name,

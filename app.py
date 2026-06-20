@@ -115,7 +115,9 @@ def setup_battle(df):
     # Retorna todos os dados formatados para o frontend
     return {
         "attacker_name": attacker_data['Name'],
+        "attacker_image_url": attacker_data['Image URL'],
         "defender_name": defender_data['Name'],
+        "defender_image_url": defender_data['Image URL'],
         "attacker_types": attacker_types,
         "defender_types": defender_types,
         "level": level_atk,
