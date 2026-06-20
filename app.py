@@ -177,26 +177,92 @@ def get_challenge_formula(params, nivel_dificuldade):
     
     return {}
 
-def setup_xp(params):
+def calc_xp(group, start, target):
+    
+    # Função auxiliar - calcula o XP total para nível n
+    def xp_at(n):
+        match group:
+            case "Fast":
+                return (4 * n**3) // 5
+                
+            case "Medium Fast":
+                return n**3
+                
+            case "Medium Slow":
+                # A fórmula é negativa no nível 1, max() para corrigir
+                xp = (6 * n**3) // 5 - 15 * n**2 + 100 * n - 140
+                return max(0, xp)
+                
+            case "Slow":
+                return (5 * n**3) // 4
+                
+            case "Erratic":
+                if n <= 50:
+                    return (n**3 * (100 - n)) // 50
+                elif n <= 68:
+                    return (n**3 * (150 - n)) // 100
+                elif n <= 98:
+                    return (n**3 * ((1911 - 10 * n) // 3)) // 500
+                else:
+                    return (n**3 * (160 - n)) // 100
+                    
+            case "Fluctuating":
+                if n <= 15:
+                    return (n**3 * (((n + 1) // 3) + 24)) // 50
+                elif n <= 36:
+                    return (n**3 * (n + 14)) // 50
+                else:
+                    return (n**3 * ((n // 2) + 32)) // 50
+            
+            case _:
+                return -1 # Fallback
 
-    # Sorteia o Pokemon
-    poke_data = df.sample(1).reset_index().iloc[0]
+    xp_start = xp_at(start)
+    xp_target = xp_at(target)
 
-    name = poke_data['Name']
-    group = 
+    if xp_start < 0 or xp_target < 0:
+        return -1
 
-    '''
-    "pokeinfo": 
-    {
-        "name": "Pikachu",
-        "growth_group": "Rápido",
-        "current_level": 10,
-        "target_level": 20
-    },
+    # XP total do target menos o que já tem
+    answer = xp_target - xp_start
+    return answer
 
-        "answer": 5600
+
+def setup_xp(nivel):
+
+    # Sorteia o Pokemon de um grupo apropriado para a dificuldade
+    if nivel == "facil":
+        grupos = ["Slow", "Medium Fast", "Fast"]
+        poke = df[df["Experience Group"].isin(grupos)].sample(1).reset_index().iloc[0]
+
+    if nivel == "medio":
+        grupos = ["Medium Slow"]
+        poke = df[df["Experience Group"].isin(grupos)].sample(1).reset_index().iloc[0]
+
+    if nivel == "dificil":
+        grupos = ["Erratic", "Fluctuating"]
+        poke = df[df["Experience Group"].isin(grupos)].sample(1).reset_index().iloc[0]
+
+    name = poke['Name']
+    group = poke['Experience Group']
+    current_level = random.randint(5, 81)
+    target_level = random.randint(current_level + 1, current_level + 15)
+
+    answer = calc_xp(group, current_level, target_level)
+
+    poke_info = {
+        "name": name,
+        "growth_group": group,
+        "current_level": current_level,
+        "target_level": target_level
     }
-    '''
+
+    return [poke_info, answer]
+
+def get_xp_formula(poke, dificulty):
+    group = ["growth_group"]
+
+    
 
 # -------- Rotas de Navegação --------
 
