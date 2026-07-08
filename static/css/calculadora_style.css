@@ -1,0 +1,129 @@
+@font-face {
+  font-family: "pokemon_simples";
+  src: url("/static/fonte_corpo/pokemon_jogo.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "pokemon_titulo";
+  src: url("/static/fonte_titulo/pokemon_solid.ttf") format("truetype");
+}
+
+:root {
+  --bg-page: #9b0000;
+  --calc-body: #ff0000;
+  --display-bg: #131103;
+  --digit-bg: #3f0000;
+  --digit-bg-hover: #3f0000;
+  --op-color: #ffffff;
+  --equals-bg: #3b4cca;
+  --equals-bg-hover: #1e2fad;
+  --text-light: #f4f5f7;
+  --text-dim: #f4f5f7;
+  --mono: "pokemon_simples", monospace;
+  --sans: "pokemon_simples", sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-page);
+  font-family: var(--sans);
+}
+.calculator {
+  width: 320px;
+  background: linear-gradient(160deg, var(--calc-body), var(--calc-body-2));
+  border-radius: 28px;
+  padding: 20px;
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.display {
+  background: var(--display-bg);
+  border-radius: 18px;
+  padding: 22px 18px 16px;
+  margin-bottom: 18px;
+  text-align: right;
+}
+.display .history {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  min-height: 16px;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+.display .current {
+  font-family: var(--mono);
+  font-size: 25px;
+  font-weight: 500;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow-x: auto;
+  margin-top: 4px;
+}
+.keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+button {
+  border: none;
+  border-radius: 14px;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 0;
+  cursor: pointer;
+  color: var(--text-light);
+  background: var(--digit-bg);
+  transition:
+    transform 0.08s ease,
+    background 0.15s ease;
+}
+button:hover {
+  background: var(--digit-bg-hover);
+}
+button:active {
+  transform: scale(0.94);
+}
+button:focus-visible {
+  outline: 2px solid var(--equals-bg);
+  outline-offset: 2px;
+}
+.op {
+  background: rgba(255, 138, 61, 0.16);
+  color: var(--op-color);
+}
+.op:hover {
+  background: rgba(255, 138, 61, 0.26);
+}
+.fn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dim);
+}
+.fn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.equals {
+  background: var(--equals-bg);
+  color: #06231d;
+  grid-row: span 2;
+}
+.equals:hover {
+  background: var(--equals-bg-hover);
+}
+.zero {
+  grid-column: span 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  button {
+    transition: none;
+  }
+}
