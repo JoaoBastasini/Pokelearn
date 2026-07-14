@@ -351,22 +351,6 @@ def calcular_xp():
         "formula": formula,
         "xp": {"answer": pokeinfo[1]}
     })
-    '''
-    "pokemon": {
-        "name": "Pikachu",
-        "growth_group": "Rápido",
-        "current_level": 10,
-        "target_level": 20
-    },
-    "formula": {
-        "name": "Crescimento Rápido",
-        "description": "Fórmula base: E = 4L³/5. Calcule a diferença (X) entre o nível alvo e o atual.",
-        "equation_tex": "X = \\frac{4 \\times 20^3}{5} - \\frac{4 \\times 10^3}{5}"
-    },
-    "xp": {
-        "answer": 5600
-    }
-    '''
 
 
 # -------- Inicialização do Servidor ---------
