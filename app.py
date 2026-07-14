@@ -28,6 +28,7 @@ except FileNotFoundError:
     print("ERRO: O arquivo all_pokemon_data.csv não foi encontrado. Verifique o caminho.")
     dados_pokemon = pd.DataFrame() # Cria um DataFrame vazio para evitar erros
 
+
 # -------- Funções Lógicas dos Minigames --------
 
 # Calcula o multiplicador de eficácia do tipo
@@ -182,21 +183,21 @@ def calc_xp(group, start, target):
     # Função auxiliar - calcula o XP total para nível n
     def xp_at(n):
         match group:
-            case "Fast":
+            case "Rápido":
                 return (4 * n**3) // 5
                 
-            case "Medium Fast":
+            case "Médio-Rápido":
                 return n**3
                 
-            case "Medium Slow":
+            case "Médio-Lento":
                 # A fórmula é negativa no nível 1, max() para corrigir
                 xp = (6 * n**3) // 5 - 15 * n**2 + 100 * n - 140
                 return max(0, xp)
                 
-            case "Slow":
+            case "Lento":
                 return (5 * n**3) // 4
                 
-            case "Erratic":
+            case "Errático":
                 if n <= 50:
                     return (n**3 * (100 - n)) // 50
                 elif n <= 68:
@@ -206,7 +207,7 @@ def calc_xp(group, start, target):
                 else:
                     return (n**3 * (160 - n)) // 100
                     
-            case "Fluctuating":
+            case "Flutuante":
                 if n <= 15:
                     return (n**3 * (((n + 1) // 3) + 24)) // 50
                 elif n <= 36:
@@ -228,20 +229,22 @@ def calc_xp(group, start, target):
     return answer
 
 
-def setup_xp(nivel):
+def setup_xp(df, nivel):
 
     # Sorteia o Pokemon de um grupo apropriado para a dificuldade
     if nivel == "facil":
-        grupos = ["Slow", "Medium Fast", "Fast"]
-        poke = df[df["Experience Group"].isin(grupos)].sample(1).reset_index().iloc[0]
+        grupos = ["Lento", "Médio-Rápido", "Rápido"]
+    elif nivel == "medio":
+        grupos = ["Médio-Lento"]
+    elif nivel == "dificil":
+        grupos = ["Errático", "Flutuante"]
+    else:
+        grupos = ["Médio-Lento"]
 
-    if nivel == "medio":
-        grupos = ["Medium Slow"]
-        poke = df[df["Experience Group"].isin(grupos)].sample(1).reset_index().iloc[0]
-
-    if nivel == "dificil":
-        grupos = ["Erratic", "Fluctuating"]
-        poke = df[df["Experience Group"].isin(grupos)].sample(1).reset_index().iloc[0]
+    candidatos = df[df["Experience Group"].isin(grupos)]
+    if candidatos.empty:
+        raise ValueError(f"Nenhum Pokémon encontrado para os grupos: {grupos}")
+    poke = candidatos.sample(1).reset_index().iloc[0]
 
     name = poke['Name']
     group = poke['Experience Group']
@@ -259,10 +262,27 @@ def setup_xp(nivel):
 
     return [poke_info, answer]
 
-def get_xp_formula(poke, dificulty):
-    group = ["growth_group"]
+def get_xp_formula(poke, dificuldade):
+    group = poke["growth_group"]
+    level_1 = poke["current_level"]
+    level_2 = poke["target_level"]
 
-    
+    formulas = {
+        "Rápido": ("Crescimento Rápido", r"E(L) = \left\lfloor\frac{4L^3}{5}\right\rfloor"),
+        "Médio-Rápido": ("Crescimento Médio-Rápido", r"E(L) = L^3"),
+        "Médio-Lento": ("Crescimento Médio-Lento", r"E(L) = \left\lfloor\frac{6L^3}{5}\right\rfloor - 15L^2 + 100L - 140"),
+        "Lento": ("Crescimento Lento", r"E(L) = \left\lfloor\frac{5L^3}{4}\right\rfloor"),
+        "Errático": ("Crescimento Errático", r"E(L) = \begin{cases}\left\lfloor\frac{L^3(100-L)}{50}\right\rfloor,&L\leq50\\\left\lfloor\frac{L^3(150-L)}{100}\right\rfloor,&51\leq L\leq68\\\left\lfloor\frac{L^3\left\lfloor(1911-10L)/3\right\rfloor}{500}\right\rfloor,&69\leq L\leq98\\\left\lfloor\frac{L^3(160-L)}{100}\right\rfloor,&L\geq99\end{cases}"),
+        "Flutuante": ("Crescimento Flutuante", r"E(L) = \begin{cases}\left\lfloor\frac{L^3(\left\lfloor(L+1)/3\right\rfloor+24)}{50}\right\rfloor,&L\leq15\\\left\lfloor\frac{L^3(L+14)}{50}\right\rfloor,&16\leq L\leq35\\\left\lfloor\frac{L^3(\left\lfloor L/2\right\rfloor+32)}{50}\right\rfloor,&L\geq36\end{cases}"),
+    }
+    name, base_equation = formulas[group]
+
+    return {
+        "name": name,
+        "description": "Calcule o XP total de cada nível e subtraia: X = E(L2) - E(L1).",
+        "equation_tex": rf"{base_equation}\qquad X = E({level_2}) - E({level_1})",
+        "difficulty": dificuldade,
+    }
 
 # -------- Rotas de Navegação --------
 
@@ -312,15 +332,16 @@ def iniciar_calculo():
         "formula": formula
     })
 
+@app.route('/api/iniciar_calculo_xp', methods=['POST'])
 @app.route('/api/calcular_xp', methods=['POST'])
 def calcular_xp():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     nivel_dificuldade = data.get('nivel', 'medio')
 
     if dados_pokemon.empty:
         return jsonify({"erro": "Dados de Pokémon não carregados"})
 
-    pokeinfo = setup_xp(dados_pokemon)
+    pokeinfo = setup_xp(dados_pokemon, nivel_dificuldade)
     
     # Obtém a fórmula para a dificuldade
     formula = get_xp_formula(pokeinfo[0], nivel_dificuldade)
@@ -328,7 +349,7 @@ def calcular_xp():
     return jsonify({
         "pokemon": pokeinfo[0],
         "formula": formula,
-        "xp": pokeinfo[1]
+        "xp": {"answer": pokeinfo[1]}
     })
     '''
     "pokemon": {

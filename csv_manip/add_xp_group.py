@@ -4,7 +4,7 @@ import os
 
 def enriquecer_csv():
     pasta_script = os.path.dirname(os.path.abspath(__file__))
-    caminho_csv = os.path.join(pasta_script, 'all_pokemon_data.csv')
+    caminho_csv = os.path.normpath(os.path.join(pasta_script, '..', 'all_pokemon_data.csv'))
     
 
     df_local = pd.read_csv(caminho_csv)
@@ -13,7 +13,7 @@ def enriquecer_csv():
     # A PokéAPI tem 6 IDs de growth-rate
     for i in range(1, 7):
         url = f"https://pokeapi.co/api/v2/growth-rate/{i}/"
-        resposta = requests.get(url)
+        resposta = requests.get(url, timeout=15)
         
         if resposta.status_code == 200:
             dados = resposta.json()
@@ -21,12 +21,12 @@ def enriquecer_csv():
             
             # Traduz os nomes da API para o padrão que conhecemos
             traducao_grupos = {
-                'slow': 'Slow',
-                'medium': 'Medium Fast',
-                'fast': 'Fast',
-                'medium-slow': 'Medium Slow',
-                'slow-then-very-fast': 'Fluctuating',
-                'fast-then-very-slow': 'Erratic'
+                'slow': 'Lento',
+                'medium': 'Médio-Rápido',
+                'fast': 'Rápido',
+                'medium-slow': 'Médio-Lento',
+                'slow-then-very-fast': 'Flutuante',
+                'fast-then-very-slow': 'Errático'
             }
             nome_formatado = traducao_grupos.get(nome_api, nome_api.title())
             
