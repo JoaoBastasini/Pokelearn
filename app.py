@@ -313,8 +313,8 @@ def calculo_logic_page():
 # -------- Rota dos Minigames (API) --------
 
 # Cria os dados da batalha e retorna para o frontend em JSON
-@app.route('/api/iniciar_calculo', methods=['POST'])
-def iniciar_calculo():
+@app.route('/api/calculo_batalha', methods=['POST'])
+def calculo_batalha():
     data = request.get_json()
     nivel_dificuldade = data.get('nivel', 'medio') # Padrão médio se não especificado
     
@@ -332,9 +332,8 @@ def iniciar_calculo():
         "formula": formula
     })
 
-@app.route('/api/iniciar_calculo_xp', methods=['POST'])
-@app.route('/api/calcular_xp', methods=['POST'])
-def calcular_xp():
+@app.route('/api/calculo_xp', methods=['POST'])
+def calculo_xp():
     data = request.get_json(silent=True) or {}
     nivel_dificuldade = data.get('nivel', 'medio')
 

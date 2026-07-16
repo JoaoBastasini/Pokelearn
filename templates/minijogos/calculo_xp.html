@@ -93,7 +93,7 @@
           document.getElementById('formula_warning').innerHTML = '';
           
           // Fetch para app.py
-          fetch('/api/iniciar_calculo_xp', {
+          fetch('/api/calculo_xp', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -137,7 +137,7 @@
           })
           .catch(error => {
               console.error('Erro ao iniciar o desafio:', error);
-              alert('Erro ao carregar desafio. Verifique se a rota "/api/iniciar_calculo_xp" existe no Flask.');
+              alert('Erro ao carregar desafio. Verifique se a rota "/api/calculo_xp" existe no Flask.');
           });
       }
 

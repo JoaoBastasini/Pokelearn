@@ -165,7 +165,7 @@
     document.getElementById("formula_warning").innerHTML = "";
 
     // Fetch API
-    fetch("/api/iniciar_calculo", {
+    fetch("/api/calculo_batalha", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -325,7 +325,7 @@
       // Dica nos níveis Médio/Difícil --> Mostra o valor base (sem stab/eficácia/aleatório)
       if (currentLevel === "medio" || currentLevel === "dificil") {
         // Chamada separada para buscar o valor base (após a falha), se necessário
-        fetch("/api/iniciar_calculo", {
+        fetch("/api/calculo_batalha", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nivel: currentLevel }),
