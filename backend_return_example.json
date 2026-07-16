@@ -72,7 +72,9 @@
         "image_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/143.png",
         "hp_max": 160,
         "hp_current": 45,
-        "catch_rate": 25
+        "catch_rate": 25,
+        "status_condition": "Dormindo",
+        "status_modifier": 2.0
       },
       "ball": {
         "name": "Ultra Ball",
