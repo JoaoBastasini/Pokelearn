@@ -284,6 +284,132 @@ def get_xp_formula(poke, dificuldade):
         "difficulty": dificuldade,
     }
 
+def get_captura_formula(is_critical_capture):
+    n_shakes = 1 if is_critical_capture else 4
+
+    return {
+        "name": "Probabilidade de Captura",
+        "description": (
+            "Calcule o valor de captura, converta-o na chance de cada movimento "
+            f"da Pokébola e eleve o resultado a {n_shakes}."
+        ),
+        "equation_tex_base": (
+            r"a = \left\lfloor\frac{(3 \times \text{HP Max} - 2 \times \text{HP Atual}) "
+            r"\times \text{Taxa} \times \text{Modificador da Bola}}"
+            r"{3 \times \text{HP Max}} \times \text{Modificador de Status}\right\rfloor"
+        ),
+        "equation_tex_probability": (
+            r"b = \left\lfloor\frac{1048560}{\sqrt[4]{16711680/a}}\right\rfloor"
+            rf"\qquad P = \left(\frac{{b}}{{65536}}\right)^{{{n_shakes}}}"
+        ),
+        "required_shakes": n_shakes
+    }
+
+def setup_captura(df, is_lucky):
+    # Sorteia um Pokémon para o encontro
+    encounter = df.sample(1).reset_index().iloc[0]
+
+    # Informações do Pokémon
+    pokemon_name = str(encounter['Name'])
+    image_url = str(encounter['Image URL'])
+    hp_max = int(encounter['Health'])
+    catch_rate = int(encounter['Catch Rate'])
+
+    # Captura Crítica?
+    is_critical_capture = False
+    n_shakes = 4
+    if is_lucky:
+        is_critical_capture = True
+        n_shakes = 1
+    else:
+        critical_roll = random.random()
+        if critical_roll < 0.05:  # 5% de chance
+            is_critical_capture = True
+            n_shakes = 1
+
+    # Sorteia a Pokébola
+    balls = {
+        "Pokébola": {"weight": 60, "modifier": 1.0},
+        "Great Ball": {"weight": 30, "modifier": 1.5},
+        "Ultra Ball": {"weight": 10, "modifier": 2.0}
+    }
+    ball_name = random.choices(
+        population=list(balls.keys()),
+        weights=[i["weight"] for i in balls.values()],
+        k=1
+    )[0]
+    ball_modifier = balls[ball_name]["modifier"]
+
+    # Sorteia Status
+    status_conditions = {
+        "Nenhum": {"weight": 6, "modifier": 1.0},
+        "Paralisado": {"weight": 3, "modifier": 1.5},
+        "Dormindo": {"weight": 2, "modifier": 2.5},
+        "Congelado": {"weight": 1, "modifier": 2.5},
+        "Envenenado": {"weight": 1, "modifier": 1.5},
+        "Queimado": {"weight": 1, "modifier": 1.5}
+    }
+    status = random.choices(
+        population=list(status_conditions.keys()),
+        weights=[i["weight"] for i in status_conditions.values()],
+        k=1
+    )[0]
+    status_modifier = status_conditions[status]["modifier"]
+
+    # Sorteia HP atual
+    hp_percentage = random.randint(1, 100)
+    hp_current = max(1, hp_percentage * hp_max // 100)
+
+    # Calcula o valor de captura base e a chance final.
+    base_chance = int((((3 * hp_max - 2 * hp_current) * catch_rate * ball_modifier) / (3 * hp_max)) * status_modifier)
+
+    if base_chance <= 0:
+        shake_threshold = 0
+        chance = 0.0
+    elif base_chance >= 255:
+        shake_threshold = 65536
+        chance = 1.0
+    else:
+        shake_threshold = int(1048560 / ((16711680 / base_chance) ** 0.25))
+        chance_per_shake = min(shake_threshold / 65536, 1.0)
+        chance = chance_per_shake ** n_shakes
+
+    is_captured = random.random() < chance
+
+    # Agrupa Info
+    encounter = {
+        "pokemon_name": pokemon_name,
+        "image_url": image_url,
+        "hp_max": hp_max,
+        "hp_current": hp_current,
+        "catch_rate": catch_rate,
+        "status_condition": status,
+        "status_modifier": status_modifier
+    }
+    ball = {
+        "name": ball_name,
+        "modifier": ball_modifier
+    }
+    capture = {
+        "is_critical_capture": is_critical_capture,
+        "required_shakes": n_shakes,
+        "is_captured": is_captured,
+    }
+    answers = {
+        "base_chance": base_chance,
+        "shake_threshold": shake_threshold,
+        "probability_decimal": chance,
+        "probability_percentage": f'{chance * 100:.2f}%'
+    }
+
+    return [
+        encounter,
+        ball,
+        capture,
+        answers
+    ]
+
+
 # -------- Rotas de Navegação --------
 
 @app.route('/')
@@ -351,6 +477,26 @@ def calculo_xp():
         "xp": {"answer": pokeinfo[1]}
     })
 
+@app.route('/api/calculo_captura', methods=['POST'])
+def calculo_captura():
+    data = request.get_json(silent=True) or {}
+    flag_lucky = data.get('is_lucky', False) is True
+
+    if dados_pokemon.empty:
+        return jsonify({"erro": "Dados de Pokémon não carregados"})
+
+    pokeinfo = setup_captura(dados_pokemon, flag_lucky)
+
+    # Obtém a fórmula para a dificuldade
+    formula = get_captura_formula(pokeinfo[2]["is_critical_capture"])
+
+    return jsonify({
+        "encounter": pokeinfo[0],
+        "ball": pokeinfo[1],
+        "capture": pokeinfo[2],
+        "formula": formula,
+        "answers": pokeinfo[3]
+    })
 
 # -------- Inicialização do Servidor ---------
 

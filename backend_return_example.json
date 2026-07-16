@@ -64,7 +64,7 @@
   "/api/calculo_captura": {
     "method": "POST",
     "example_request_body": {
-      "nivel": "dificil"
+      "is_lucky": true
     },
     "example_response_body": {
       "encounter": {
@@ -74,27 +74,29 @@
         "hp_current": 45,
         "catch_rate": 25,
         "status_condition": "Dormindo",
-        "status_modifier": 2.0
+        "status_modifier": 2.5
       },
       "ball": {
         "name": "Ultra Ball",
         "modifier": 2.0
       },
-      "capture_conditions": {
+      "capture": {
         "is_critical_capture": true,
-        "n_shakes": 1
+        "required_shakes": 1,
+        "is_captured": true
       },
       "formula": {
         "name": "Probabilidade de Captura",
-        "description": "Calcule a chance base e, em seguida, a probabilidade de sucesso nos movimentos exigidos. Em uma captura crítica, apenas um movimento é necessário.",
-        "equation_tex_base": "\\text{Chance Base} = \\frac{(3 \\times \\text{HP Max} - 2 \\times \\text{HP Atual}) \\times \\text{Taxa} \\times \\text{Modificador da Bola}}{3 \\times \\text{HP Max}}",
-        "equation_tex_probability": "\\text{Probabilidade} = \\left(\\frac{\\text{Chance Base}}{256}\\right)^n",
-        "difficulty": "dificil"
+        "description": "Calcule o valor de captura, converta-o na chance de cada movimento da Pokébola e eleve o resultado a 1.",
+        "equation_tex_base": "a = \\left\\lfloor\\frac{(3 \\times \\text{HP Max} - 2 \\times \\text{HP Atual}) \\times \\text{Taxa} \\times \\text{Modificador da Bola}}{3 \\times \\text{HP Max}} \\times \\text{Modificador de Status}\\right\\rfloor",
+        "equation_tex_probability": "b = \\left\\lfloor\\frac{1048560}{\\sqrt[4]{16711680/a}}\\right\\rfloor\\qquad P = \\left(\\frac{b}{65536}\\right)^{1}",
+        "required_shakes": 1
       },
       "answers": {
-        "base_chance": 40.625,
-        "probability_decimal": 0.15869140625,
-        "probability_percentage": 15.869140625
+        "base_chance": 101,
+        "shake_threshold": 51989,
+        "probability_decimal": 0.7932891845703125,
+        "probability_percentage": "79.33%"
       }
     }
   },
