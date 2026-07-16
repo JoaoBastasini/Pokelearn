@@ -1,0 +1,158 @@
+{
+  "/api/calculo_batalha": {
+    "method": "POST",
+    "example_request_body": {
+      "nivel": "medio"
+    },
+    "example_response_body": {
+      "battle": {
+        "attacker_name": "bulbasaur",
+        "attacker_image_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+        "defender_name": "charmander",
+        "defender_image_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png",
+        "attacker_types": [
+          "Grama",
+          "Venenoso"
+        ],
+        "defender_types": [
+          "Fogo"
+        ],
+        "level": 50,
+        "power": 80,
+        "atk_stat_name": "Attack",
+        "def_stat_name": "Defense",
+        "atk_value": 49,
+        "def_value": 43,
+        "attack_type": "Grama",
+        "stab_mod": 1.5,
+        "type_effectiveness": 0.5,
+        "base_calc_no_random": 42.11162790697674,
+        "range_min": 26,
+        "range_max": 31
+      },
+      "formula": {
+        "name": "MÉDIO",
+        "description": "Use a fórmula padrão Pokémon. Lembre-se de seguir a ordem das operações.",
+        "equation_tex": "\\text{Dano} = \\lfloor \\left( \\left[ \\left( \\frac{2 \\times \\text{Nível}}{5} + 2 \\right) \\times \\frac{\\text{Atk}}{\\text{Def}} \\times \\frac{\\text{Poder}}{50} \\right] + 2 \\right) \\times \\text{STAB} \\times \\text{Eficácia} \\rfloor",
+        "answer_for_level": 31
+      }
+    }
+  },
+  "/api/calculo_xp": {
+    "method": "POST",
+    "example_request_body": {
+      "nivel": "medio"
+    },
+    "example_response_body": {
+      "pokemon": {
+        "name": "bulbasaur",
+        "growth_group": "Médio-Lento",
+        "current_level": 20,
+        "target_level": 25
+      },
+      "formula": {
+        "name": "Crescimento Médio-Lento",
+        "description": "Calcule o XP total de cada nível e subtraia: X = E(L2) - E(L1).",
+        "equation_tex": "E(L) = \\left\\lfloor\\frac{6L^3}{5}\\right\\rfloor - 15L^2 + 100L - 140\\qquad X = E(25) - E(20)",
+        "difficulty": "medio"
+      },
+      "xp": {
+        "answer": 6275
+      }
+    }
+  },
+  "/api/calculo_captura": {
+    "method": "POST",
+    "example_request_body": {
+      "nivel": "dificil"
+    },
+    "example_response_body": {
+      "encounter": {
+        "pokemon_name": "snorlax",
+        "image_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/143.png",
+        "hp_max": 160,
+        "hp_current": 45,
+        "catch_rate": 25
+      },
+      "ball": {
+        "name": "Ultra Ball",
+        "modifier": 2.0
+      },
+      "capture_conditions": {
+        "is_critical_capture": true,
+        "n_shakes": 1
+      },
+      "formula": {
+        "name": "Probabilidade de Captura",
+        "description": "Calcule a chance base e, em seguida, a probabilidade de sucesso nos movimentos exigidos. Em uma captura crítica, apenas um movimento é necessário.",
+        "equation_tex_base": "\\text{Chance Base} = \\frac{(3 \\times \\text{HP Max} - 2 \\times \\text{HP Atual}) \\times \\text{Taxa} \\times \\text{Modificador da Bola}}{3 \\times \\text{HP Max}}",
+        "equation_tex_probability": "\\text{Probabilidade} = \\left(\\frac{\\text{Chance Base}}{256}\\right)^n",
+        "difficulty": "dificil"
+      },
+      "answers": {
+        "base_chance": 40.625,
+        "probability_decimal": 0.15869140625,
+        "probability_percentage": 15.869140625
+      }
+    }
+  },
+  "/api/calculo_prob_event": {
+    "method": "POST",
+    "example_request_body": {
+      "nivel": "medio"
+    },
+    "example_response_body": {
+      "scenario": {
+        "type": "acuracia_tentativa_exata",
+        "attack_name": "Hydro Pump",
+        "base_accuracy": 0.8,
+        "target_attempt": 3,
+        "description_text": "Qual é a probabilidade de um ataque com 80% de precisão acertar somente na terceira tentativa?"
+      },
+      "formula": {
+        "name": "Probabilidade de Eventos Compostos",
+        "description": "Multiplique a probabilidade de falha nas tentativas iniciais pela probabilidade de sucesso na última tentativa.",
+        "equation_tex": "P = (1 - \\text{acurácia})^2 \\times \\text{acurácia}",
+        "difficulty": "medio"
+      },
+      "answers": {
+        "probability_decimal": 0.032,
+        "probability_percentage": 3.2
+      }
+    }
+  },
+  "/api/calculo_logic": {
+    "method": "POST",
+    "example_request_body": {
+      "nivel": "dificil"
+    },
+    "example_response_body": {
+      "puzzle": {
+        "description_text": "Se recebo dano supereficaz de Fogo e meus ataques são supereficazes contra Água, qual é o meu tipo?",
+        "clues": [
+          {
+            "interaction": "weak_to",
+            "type": "Fogo"
+          },
+          {
+            "interaction": "strong_against",
+            "type": "Água"
+          }
+        ]
+      },
+      "game_settings": {
+        "show_type_chart": false,
+        "difficulty": "dificil"
+      },
+      "formula": {
+        "name": "Dedução Lógica de Tipos",
+        "description": "Analise as fraquezas e vantagens ofensivas para deduzir o tipo oculto.",
+        "equation_tex": null,
+        "difficulty": "dificil"
+      },
+      "answers": {
+        "correct_type": "Grama"
+      }
+    }
+  }
+}
