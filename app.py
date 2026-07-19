@@ -28,6 +28,14 @@ except FileNotFoundError:
     print("ERRO: O arquivo all_pokemon_data.csv não foi encontrado. Verifique o caminho.")
     dados_pokemon = pd.DataFrame() # Cria um DataFrame vazio para evitar erros
 
+try:
+    caminho_csv = os.path.join(os.path.dirname(__file__), 'damage_moves.csv')
+    dados_pokemon = pd.read_csv(caminho_csv)
+    print("Dados de Ataques carregados com sucesso.")
+except FileNotFoundError:
+    print("ERRO: O arquivo damage_moves.csv não foi encontrado. Verifique o caminho.")
+    dados_pokemon = pd.DataFrame() # Cria um DataFrame vazio para evitar erros
+
 
 # -------- Funções Lógicas dos Minigames --------
 
