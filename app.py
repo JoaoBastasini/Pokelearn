@@ -132,12 +132,14 @@ def setup_battle(df, moves):
         "attacker_image_url": attacker_data['Image URL'],
         "attacker_types": attacker_types,
         "level": level_atk,
+        "atk_stat_name": atk_stat_name,
         "atk_value": int(atk_stat)
     }
     defender = {
         "defender_name": defender_data['Name'],
         "defender_image_url": defender_data['Image URL'],
         "defender_types": defender_types,
+        "def_stat_name": def_stat_name,
         "def_value": int(def_stat)
     }
     move_info = {
@@ -146,8 +148,6 @@ def setup_battle(df, moves):
         "power": base_power
     }
     battle = {
-        "atk_stat_name": atk_stat_name,
-        "def_stat_name": def_stat_name,
         "stab_mod": stab_mod,
         "type_effectiveness": type_effectiveness,
         "base_calc_no_random": float(base_calc),

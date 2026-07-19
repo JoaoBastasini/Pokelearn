@@ -13,6 +13,7 @@
           "Venenoso"
         ],
         "level": 50,
+        "atk_stat_name": "Attack",
         "atk_value": 49
       },
       "defender": {
@@ -21,6 +22,7 @@
         "defender_types": [
           "Fogo"
         ],
+        "def_stat_name": "Defense",
         "def_value": 43
       },
       "move_info": {
@@ -29,8 +31,6 @@
         "power": 80
       },
       "battle": {
-        "atk_stat_name": "Attack",
-        "def_stat_name": "Defense",
         "stab_mod": 1.5,
         "type_effectiveness": 0.5,
         "base_calc_no_random": 42.11162790697674,

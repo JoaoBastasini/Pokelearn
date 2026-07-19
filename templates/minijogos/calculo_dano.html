@@ -81,8 +81,8 @@
 
     <div class="info_box">
       <p>
-        <strong>💥 Ataque:</strong> <span id="attack_type"></span> (Poder
-        <span id="power"></span>)
+        <strong>💥 Ataque:</strong> <span id="move_name"></span> —
+        <span id="attack_type"></span> (Poder <span id="power"></span>)
       </p>
       <p><strong>⭐ STAB:</strong> x<span id="stab_mod"></span></p>
       <p>
@@ -220,13 +220,15 @@
           data.defender.defender_types.join(","),
         );
         document.getElementById("atk_stat_name").textContent =
-          data.battle.atk_stat_name;
+          data.attacker.atk_stat_name;
         document.getElementById("atk_value").textContent =
           data.attacker.atk_value;
         document.getElementById("def_stat_name").textContent =
-          data.battle.def_stat_name;
+          data.defender.def_stat_name;
         document.getElementById("def_value").textContent =
           data.defender.def_value;
+        document.getElementById("move_name").textContent =
+          data.move_info.name;
         document.getElementById("attack_type").textContent = capitalize(
           data.move_info.attack_type,
         );
