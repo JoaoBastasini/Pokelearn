@@ -17,7 +17,7 @@ RAIZ_PROJETO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if RAIZ_PROJETO not in sys.path:
     sys.path.insert(0, RAIZ_PROJETO)
 
-from type_data import TYPE_CHART_OFFENSIVE
+from data.type_data import TYPE_CHART_OFFENSIVE
 
 
 TRADUCAO_TIPOS = {
@@ -294,7 +294,7 @@ def traduzir_moves(
 def main() -> None:
     pasta_script = os.path.dirname(os.path.abspath(__file__))
     raiz = os.path.normpath(os.path.join(pasta_script, ".."))
-    caminho_csv = os.path.join(raiz, "damage_moves.csv")
+    caminho_csv = os.path.join(raiz, "data", "damage_moves.csv")
     caminho_cache = os.path.join(pasta_script, "move_name_translations.json")
 
     parser = argparse.ArgumentParser(

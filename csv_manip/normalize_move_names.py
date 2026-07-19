@@ -47,7 +47,7 @@ def normalizar_nomes(caminho_csv: str, caminho_saida: str) -> int:
 def main() -> None:
     pasta_script = os.path.dirname(os.path.abspath(__file__))
     caminho_padrao = os.path.normpath(
-        os.path.join(pasta_script, "..", "damage_moves.csv")
+        os.path.join(pasta_script, "..", "data", "damage_moves.csv")
     )
 
     parser = argparse.ArgumentParser(

@@ -22,7 +22,7 @@ TRADUCAO_GRUPOS_XP = {
 def traduzir_grupos_xp():
     pasta_script = os.path.dirname(os.path.abspath(__file__))
     caminho_csv = os.path.normpath(
-        os.path.join(pasta_script, "..", "all_pokemon_data.csv")
+        os.path.join(pasta_script, "..", "data", "all_pokemon_data.csv")
     )
 
     with open(caminho_csv, encoding="utf-8", newline="") as arquivo:

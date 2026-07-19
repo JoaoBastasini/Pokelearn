@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import random
 import os
-from type_data import TYPE_CHART_OFFENSIVE, TYPE_CHART_DEFENSIVE
+from data.type_data import TYPE_CHART_OFFENSIVE, TYPE_CHART_DEFENSIVE
 
 '''
 Para rodar o servidor Flask:
@@ -18,11 +18,12 @@ app = Flask(__name__)
 
 # -------- Carregar Dados --------
 
-# Carrega os dados do .csv de forma relativa tanto ao diretório atual quanto ao sistema operacional
-# os.path.dirname(__file__) pega o diretório
-# os.path.join monta o caminho corretamente independentemente do SO
+# Carrega os dados de forma relativa à raiz do projeto, independentemente
+# do diretório de onde o app é executado.
+PASTA_DADOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+
 try:
-    caminho_csv = os.path.join(os.path.dirname(__file__), 'all_pokemon_data.csv')
+    caminho_csv = os.path.join(PASTA_DADOS, 'all_pokemon_data.csv')
     dados_pokemon = pd.read_csv(caminho_csv)
     print("Dados de Pokémon carregados com sucesso.")
 except FileNotFoundError:
@@ -30,7 +31,7 @@ except FileNotFoundError:
     dados_pokemon = pd.DataFrame() # Cria um DataFrame vazio para evitar erros
 
 try:
-    caminho_csv = os.path.join(os.path.dirname(__file__), 'damage_moves.csv')
+    caminho_csv = os.path.join(PASTA_DADOS, 'damage_moves.csv')
     dados_moves = pd.read_csv(caminho_csv)
     tipos_moves = set(dados_moves["type"].dropna().astype(str).str.strip())
     tipos_invalidos = tipos_moves.difference(TYPE_CHART_OFFENSIVE)

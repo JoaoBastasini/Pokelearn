@@ -142,10 +142,10 @@ def importar_golpes(caminho_saida: str, caminho_pokemon: str) -> int:
 def main() -> None:
     pasta_script = os.path.dirname(os.path.abspath(__file__))
     caminho_padrao = os.path.normpath(
-        os.path.join(pasta_script, "..", "damage_moves.csv")
+        os.path.join(pasta_script, "..", "data", "damage_moves.csv")
     )
     caminho_pokemon_padrao = os.path.normpath(
-        os.path.join(pasta_script, "..", "all_pokemon_data.csv")
+        os.path.join(pasta_script, "..", "data", "all_pokemon_data.csv")
     )
     parser = argparse.ArgumentParser(
         description="Cria um CSV com os golpes de dano da PokéAPI."

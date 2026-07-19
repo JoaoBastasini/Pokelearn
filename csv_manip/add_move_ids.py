@@ -64,8 +64,9 @@ def adicionar_ids(
 def main() -> None:
     pasta_script = os.path.dirname(os.path.abspath(__file__))
     raiz = os.path.normpath(os.path.join(pasta_script, ".."))
-    caminho_pokemon = os.path.join(raiz, "all_pokemon_data.csv")
-    caminho_golpes = os.path.join(raiz, "damage_moves.csv")
+    pasta_dados = os.path.join(raiz, "data")
+    caminho_pokemon = os.path.join(pasta_dados, "all_pokemon_data.csv")
+    caminho_golpes = os.path.join(pasta_dados, "damage_moves.csv")
 
     parser = argparse.ArgumentParser(
         description="Adiciona IDs dos golpes aprendíveis ao CSV de Pokémon."

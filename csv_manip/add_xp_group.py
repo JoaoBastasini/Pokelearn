@@ -4,7 +4,9 @@ import os
 
 def enriquecer_csv():
     pasta_script = os.path.dirname(os.path.abspath(__file__))
-    caminho_csv = os.path.normpath(os.path.join(pasta_script, '..', 'all_pokemon_data.csv'))
+    caminho_csv = os.path.normpath(
+        os.path.join(pasta_script, '..', 'data', 'all_pokemon_data.csv')
+    )
     
 
     df_local = pd.read_csv(caminho_csv)
