@@ -16,7 +16,6 @@ API_URL = "https://pokeapi.co/api/v2/move"
 COLUNAS = [
     "id",
     "name",
-    "nome_pt_br",
     "type",
     "damage_class",
     "power",
@@ -50,13 +49,6 @@ def buscar_json(sessao: requests.Session, url: str) -> dict[str, Any]:
     return resposta.json()
 
 
-def nome_em_portugues(nomes: list[dict[str, Any]]) -> str:
-    for nome in nomes:
-        if nome["language"]["name"] == "pt-BR":
-            return nome["name"]
-    return ""
-
-
 def transformar_golpe(
     golpe: dict[str, Any],
     indices_por_nome: dict[str, list[int]] | None = None,
@@ -82,7 +74,6 @@ def transformar_golpe(
     return {
         "id": golpe["id"],
         "name": golpe["name"],
-        "nome_pt_br": nome_em_portugues(golpe.get("names", [])),
         "type": golpe["type"]["name"],
         "damage_class": classe,
         "power": poder,

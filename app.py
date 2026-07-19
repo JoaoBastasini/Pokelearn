@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from livereload import Server
+import json
 import pandas as pd
 import numpy as np
 import random
@@ -31,6 +32,13 @@ except FileNotFoundError:
 try:
     caminho_csv = os.path.join(os.path.dirname(__file__), 'damage_moves.csv')
     dados_moves = pd.read_csv(caminho_csv)
+    tipos_moves = set(dados_moves["type"].dropna().astype(str).str.strip())
+    tipos_invalidos = tipos_moves.difference(TYPE_CHART_OFFENSIVE)
+    if tipos_invalidos:
+        raise ValueError(
+            "Tipos incompatíveis em damage_moves.csv: "
+            f"{sorted(tipos_invalidos)}"
+        )
     print("Dados de Ataques carregados com sucesso.")
 except FileNotFoundError:
     print("ERRO: O arquivo damage_moves.csv não foi encontrado. Verifique o caminho.")
@@ -51,13 +59,14 @@ def get_type_effectiveness(attack_type, defender_types):
     return multiplier
 
 # Escolhe aleatoriamente o atacante, defensor, níveis e ataque.
-def setup_battle(df):    
+def setup_battle(df, moves):
     
     # Escolhe os Pokémon
-    # Faz um DF com um único elemento, aleatório
+    # Faz um DF com um único elemento, que possua ataques
     # Reseta o índice, o original vira uma coluna chamada 'index' e o novo é 0.
     # Seleciona o primeiro e único elemento com iloc[0]
-    attacker_data = df.sample(1).reset_index().iloc[0]
+    atacantes_com_golpes = df[df["Damage Move IDs"] != "[]"]
+    attacker_data = atacantes_com_golpes.sample(1).reset_index().iloc[0]
     defender_data = df.sample(1).reset_index().iloc[0]
     
     # Sorteia os níveis dos Pokémon
@@ -67,11 +76,14 @@ def setup_battle(df):
     # level_def = random.randint(max(40, level_atk - 10), min(60, level_atk + 10))
     # Aparentemente o nível do defensor não é usado no cálculo de dano, então foi comentado, mas caso venha a calhar, está aí.
 
-    # Escolhe o poder do ataque (múltiplo de 10 de 40 a 120)
-    base_power = random.choice(range(40, 121, 10))
+    # Escolhe um ataque que o pokémon atacante pode aprender
+    many_move_ids = json.loads(attacker_data["Damage Move IDs"])
+    move_id = random.choice(many_move_ids)
+    move = moves.loc[moves["id"] == move_id].iloc[0]
 
-    # Determina se é físico ou especial, por sorteio, e seleciona os stats correspondentes
-    is_physical = random.choice([True, False])
+    move_name = move["name"]
+    base_power = int(move["power"])
+    is_physical = move["damage_class"] == "Físico"
 
     if is_physical:
         atk_stat = attacker_data['Attack']
@@ -85,24 +97,14 @@ def setup_battle(df):
         def_stat_name = 'Special Defense'
 
     # Escolhe o tipo do ataque
-    all_types = list(TYPE_CHART_OFFENSIVE.keys())
+    attack_type = move["type"]
 
-    attacker_types = [] # Lista vazia para armazenar os tipos válidos
-    attacker_types.append(attacker_data['Primary Typing']) # Armazena o primeiro
+    # Armazena os tipos do Pokémon
+    attacker_types = []
+    attacker_types.append(attacker_data['Primary Typing'])
     if pd.notna(attacker_data['Secondary Typing']):
-        attacker_types.append(attacker_data['Secondary Typing']) # Armazena o segundo, se houver
+        attacker_types.append(attacker_data['Secondary Typing'])
     
-    # 50% de chance de ser STAB (mesmo tipo, com bônus de 1.5 no dano), 50% de chance de ser outro tipo
-    if random.random() < 0.5 and attacker_types:
-        attack_type = random.choice(attacker_types)
-    else:
-        # Escolhe um tipo que não seja do atacante
-        non_stab_types = []
-        for t in all_types:
-            if t not in attacker_types:
-                non_stab_types.append(t)
-        attack_type = random.choice(non_stab_types)
-
     # Calcula modificadores
     stab_mod = 1.5 if attack_type in attacker_types else 1.0
     
@@ -122,26 +124,43 @@ def setup_battle(df):
     damage_max = np.floor(base_calc * stab_mod * type_effectiveness * 1.00)
     damage_min = np.floor(base_calc * stab_mod * type_effectiveness * 0.85)
 
-    # Retorna todos os dados formatados para o frontend
-    return {
+
+    # Agrupa Info
+
+    attacker = {
         "attacker_name": attacker_data['Name'],
         "attacker_image_url": attacker_data['Image URL'],
+        "attacker_types": attacker_types,
+        "level": level_atk,
+        "atk_value": int(atk_stat)
+    }
+    defender = {
         "defender_name": defender_data['Name'],
         "defender_image_url": defender_data['Image URL'],
-        "attacker_types": attacker_types,
         "defender_types": defender_types,
-        "level": level_atk,
-        "power": base_power,
+        "def_value": int(def_stat)
+    }
+    move_info = {
+        "name" : move_name,
+        "attack_type": attack_type,
+        "power": base_power
+    }
+    battle = {
         "atk_stat_name": atk_stat_name,
         "def_stat_name": def_stat_name,
-        "atk_value": int(atk_stat),
-        "def_value": int(def_stat),
-        "attack_type": attack_type,
         "stab_mod": stab_mod,
         "type_effectiveness": type_effectiveness,
-        "base_calc_no_random": base_calc,
+        "base_calc_no_random": float(base_calc),
         "range_min": int(damage_min),
         "range_max": int(damage_max)
+    }
+
+    # Retorna todos os dados formatados para o frontend
+    return {
+        "attacker": attacker,
+        "defender": defender,
+        "move_info": move_info,
+        "battle": battle
     }
 
 def get_challenge_formula(params, nivel_dificuldade):
@@ -150,8 +169,8 @@ def get_challenge_formula(params, nivel_dificuldade):
     # NÍVEL FÁCIL --> focar em STAB e Eficácia.
     # Dano = (Poder * 0.5 + 10) * STAB * Eficácia
     if nivel_dificuldade == 'facil':
-        base_calc_facil = (params['power'] * 0.5) + 10 # Cálculo base simplificado (sem stats e nível)
-        answer_facil = np.floor(base_calc_facil * params['stab_mod'] * params['type_effectiveness'])
+        base_calc_facil = (params['move_info']['power'] * 0.5) + 10 # Cálculo base simplificado (sem stats e nível)
+        answer_facil = np.floor(base_calc_facil * params['battle']['stab_mod'] * params['battle']['type_effectiveness'])
         
         return {
             "name": "FÁCIL",
@@ -168,7 +187,7 @@ def get_challenge_formula(params, nivel_dificuldade):
             "description": "Use a fórmula padrão Pokémon. Lembre-se de seguir a ordem das operações.",
             "equation_tex": r"\text{Dano} = \lfloor \left( \left[ \left( \frac{2 \times \text{Nível}}{5} + 2 \right) \times \frac{\text{Atk}}{\text{Def}} \times \frac{\text{Poder}}{50} \right] + 2 \right) \times \text{STAB} \times \text{Eficácia} \rfloor",
             # params['damage_max'] é o dano exato com fator 1.0
-            "answer_for_level": params['range_max']
+            "answer_for_level": params['battle']['range_max']
         }
     
     # NÍVEL DIFÍCIL --> resultado deve ser a faixa completa de dano (0.85 a 1.0)
@@ -179,9 +198,9 @@ def get_challenge_formula(params, nivel_dificuldade):
             "description": "Calcule a Faixa de Dano. Você deve calcular o valor mínimo (Fator 0.85) e o valor máximo (Fator 1.0) e responder Min-Max.",
             "equation_tex": r"\text{Dano} = \lfloor \left( \left[ \left( \frac{2 \times \text{Nível}}{5} + 2 \right) \times \frac{\text{Atk}}{\text{Def}} \times \frac{\text{Poder}}{50} \right] + 2 \right) \times \text{STAB} \times \text{Eficácia} \times \text{Aleatório} \rfloor",
             # A resposta deve ser a string [min-max]
-            "answer_for_level": f"[{params['range_min']} - {params['range_max']}]",
-            "range_min": params['range_min'],
-            "range_max": params['range_max']
+            "answer_for_level": f"[{params['battle']['range_min']} - {params['battle']['range_max']}]",
+            "range_min": params['battle']['range_min'],
+            "range_max": params['battle']['range_max']
         }
     
     return {}
@@ -449,21 +468,25 @@ def calculo_logic_page():
 # Cria os dados da batalha e retorna para o frontend em JSON
 @app.route('/api/calculo_batalha', methods=['POST'])
 def calculo_batalha():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     nivel_dificuldade = data.get('nivel', 'medio') # Padrão médio se não especificado
     
     if dados_pokemon.empty:
         return jsonify({"erro": "Dados de Pokémon não carregados"})
-    if da
+    if dados_moves.empty:
+        return jsonify({"erro": "Dados de ataques não carregados"})
     
     # Configura a batalha
-    params = setup_battle(dados_pokemon)
+    pokeinfo = setup_battle(dados_pokemon, dados_moves)
     
     # Obtém a fórmula para a dificuldade
-    formula = get_challenge_formula(params, nivel_dificuldade)
+    formula = get_challenge_formula(pokeinfo, nivel_dificuldade)
     
     return jsonify({
-        "battle": params,
+        "attacker": pokeinfo["attacker"],
+        "defender": pokeinfo["defender"],
+        "move_info": pokeinfo["move_info"],
+        "battle": pokeinfo["battle"],
         "formula": formula
     })
 

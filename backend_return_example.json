@@ -5,25 +5,32 @@
       "nivel": "medio"
     },
     "example_response_body": {
-      "battle": {
+      "attacker": {
         "attacker_name": "bulbasaur",
         "attacker_image_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
-        "defender_name": "charmander",
-        "defender_image_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png",
         "attacker_types": [
           "Grama",
           "Venenoso"
         ],
+        "level": 50,
+        "atk_value": 49
+      },
+      "defender": {
+        "defender_name": "charmander",
+        "defender_image_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png",
         "defender_types": [
           "Fogo"
         ],
-        "level": 50,
-        "power": 80,
+        "def_value": 43
+      },
+      "move_info": {
+        "name": "Bomba de sementes",
+        "attack_type": "Grama",
+        "power": 80
+      },
+      "battle": {
         "atk_stat_name": "Attack",
         "def_stat_name": "Defense",
-        "atk_value": 49,
-        "def_value": 43,
-        "attack_type": "Grama",
         "stab_mod": 1.5,
         "type_effectiveness": 0.5,
         "base_calc_no_random": 42.11162790697674,
