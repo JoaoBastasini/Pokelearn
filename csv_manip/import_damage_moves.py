@@ -61,9 +61,10 @@ def transformar_golpe(
     golpe: dict[str, Any],
     indices_por_nome: dict[str, list[int]] | None = None,
 ) -> dict[str, Any] | None:
-    """Retorna uma linha somente se o movimento tiver classe de dano."""
+    """Retorna uma linha somente para golpes de dano com poder numérico."""
     classe = golpe["damage_class"]["name"]
-    if classe not in {"physical", "special"}:
+    poder = golpe["power"]
+    if classe not in {"physical", "special"} or not poder or poder <= 0:
         return None
 
     precisao = golpe["accuracy"]
@@ -84,8 +85,7 @@ def transformar_golpe(
         "nome_pt_br": nome_em_portugues(golpe.get("names", [])),
         "type": golpe["type"]["name"],
         "damage_class": classe,
-        # Campo vazio é preservado: alguns golpes de dano fixo não têm power.
-        "power": "" if golpe["power"] is None else golpe["power"],
+        "power": poder,
         # Accuracy vazia indica que o golpe não usa o teste normal de precisão.
         "accuracy": "" if precisao is None else precisao,
         "pp": golpe["pp"],
