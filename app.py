@@ -498,6 +498,23 @@ def calculo_captura():
         "answers": pokeinfo[3]
     })
 
+
+@app.route('/api/calculo_prob_event', methods=['POST'])
+def calculo_prob_event():
+    data = request.get_json(silent=True) or {}
+    nivel_dificuldade = data.get('nivel', 'medio')
+
+    if dados_pokemon.empty:
+        return jsonify({"erro": "Dados de Pokémon não carregados"})
+    
+    pokeinfo = setup_prob_event(dados_pokemon, nivel_dificuldade)
+    formula = get_prov_event_formula(nivel_dificuldade)
+
+    return jsonify({
+        ""
+    })
+
+
 # -------- Inicialização do Servidor ---------
 
 if __name__ == '__main__':
