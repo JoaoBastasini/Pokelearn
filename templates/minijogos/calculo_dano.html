@@ -91,8 +91,8 @@
 
     <div class="info_box">
       <p>
-        <strong>💥 Ataque:</strong> <span id="attack_type"></span> (Poder
-        <span id="power"></span>)
+        <strong>💥 Ataque:</strong> <span id="move_name"></span> —
+        <span id="attack_type"></span> (Poder <span id="power"></span>)
       </p>
       <p><strong>⭐ STAB:</strong> x<span id="stab_mod"></span></p>
       <p>
@@ -175,7 +175,7 @@
     document.getElementById("formula_warning").innerHTML = "";
 
     // Fetch API
-    fetch("/api/iniciar_calculo", {
+    fetch("/api/calculo_batalha", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -198,14 +198,14 @@
         correctRangeMax = data.formula.range_max;
 
         document.getElementById("attacker_img").src =
-          data.battle.attacker_image_url;
+          data.attacker.attacker_image_url;
         document.getElementById("attacker_img").alt = capitalize(
-          data.battle.attacker_name,
+          data.attacker.attacker_name,
         );
         document.getElementById("defender_img").src =
-          data.battle.defender_image_url;
+          data.defender.defender_image_url;
         document.getElementById("defender_img").alt = capitalize(
-          data.battle.defender_name,
+          data.defender.defender_name,
         );
         // Preenche os campos do HTML (span)
         document.getElementById("level_name").textContent = capitalize(
@@ -217,30 +217,32 @@
           data.formula.description;
 
         document.getElementById("attacker_name").textContent = capitalize(
-          data.battle.attacker_name,
+          data.attacker.attacker_name,
         );
         document.getElementById("defender_name").textContent = capitalize(
-          data.battle.defender_name,
+          data.defender.defender_name,
         );
-        document.getElementById("level").textContent = data.battle.level;
+        document.getElementById("level").textContent = data.attacker.level;
         document.getElementById("attacker_types").textContent = formatTypes(
-          data.battle.attacker_types.join(","),
+          data.attacker.attacker_types.join(","),
         );
         document.getElementById("defender_types").textContent = formatTypes(
-          data.battle.defender_types.join(","),
+          data.defender.defender_types.join(","),
         );
         document.getElementById("atk_stat_name").textContent =
-          data.battle.atk_stat_name;
+          data.attacker.atk_stat_name;
         document.getElementById("atk_value").textContent =
-          data.battle.atk_value;
+          data.attacker.atk_value;
         document.getElementById("def_stat_name").textContent =
-          data.battle.def_stat_name;
+          data.defender.def_stat_name;
         document.getElementById("def_value").textContent =
-          data.battle.def_value;
+          data.defender.def_value;
+        document.getElementById("move_name").textContent =
+          data.move_info.name;
         document.getElementById("attack_type").textContent = capitalize(
-          data.battle.attack_type,
+          data.move_info.attack_type,
         );
-        document.getElementById("power").textContent = data.battle.power;
+        document.getElementById("power").textContent = data.move_info.power;
         document.getElementById("stab_mod").textContent = data.battle.stab_mod;
         document.getElementById("type_effectiveness").textContent =
           data.battle.type_effectiveness;
@@ -335,7 +337,7 @@
       // Dica nos níveis Médio/Difícil --> Mostra o valor base (sem stab/eficácia/aleatório)
       if (currentLevel === "medio" || currentLevel === "dificil") {
         // Chamada separada para buscar o valor base (após a falha), se necessário
-        fetch("/api/iniciar_calculo", {
+        fetch("/api/calculo_batalha", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nivel: currentLevel }),

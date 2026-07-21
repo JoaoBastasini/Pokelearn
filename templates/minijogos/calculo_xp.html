@@ -6,12 +6,13 @@
   rel="stylesheet"
   href="{{ url_for('static', filename='css/geral_style.css') }}"
 />
+<script src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css"
+/>
 <title>Cálculo de XP</title>
-
-{% endblock %}
-<!---->
-{% block content %}
-
+{% endblock %} {% block content %}
 <section>
   <svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
     <defs>
@@ -29,5 +30,196 @@
       </textPath>
     </text>
   </svg>
+
+  <div class="container">
+    <h3 style="text-align: center">Selecione o Nível de Dificuldade:</h3>
+
+    <div class="botoes_nivel">
+      <button class="facil" onclick="startChallenge('facil')">FÁCIL</button>
+      <button class="medio" onclick="startChallenge('medio')">MÉDIO</button>
+      <button class="dificil" onclick="startChallenge('dificil')">
+        DIFÍCIL
+      </button>
+    </div>
+
+    <div id="challenge_area" style="display: none">
+      <hr />
+      <h2 id="challenge_title">
+        Desafio de XP - Nível: <span id="level_name"></span>
+      </h2>
+
+      <div class="info_box">
+        <div class="grade_stats">
+          <div>
+            <p><strong>🧬 POKÉMON:</strong> <span id="pokemon_name"></span></p>
+            <p>
+              <strong>📈 Grupo de Crescimento:</strong>
+              <span id="growth_group"></span>
+            </p>
+          </div>
+          <div>
+            <p>
+              <strong>⬇️ Nível Atual (L1):</strong>
+              <span id="current_level"></span>
+            </p>
+            <p>
+              <strong>⬆️ Nível Alvo (L2):</strong>
+              <span id="target_level"></span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula_LaTex">
+        <h3>Fórmula: <span id="formula_name"></span></h3>
+        <p id="formula_description" style="font-style: italic; color: #555"></p>
+        <div
+          id="formula_equation"
+          style="font-size: 1.5em; margin: 10px; overflow-x: auto"
+        ></div>
+        <p id="formula_warning" style="color: #ad4e4a; font-weight: bold"></p>
+      </div>
+
+      <div class="grupo_entrada">
+        <label for="user_answer" id="label_answer"
+          >XP Necessária (Diferença entre os níveis):</label
+        ><br />
+        <input
+          type="number"
+          id="user_answer"
+          style="margin-top: 20px"
+          placeholder="Ex: 6400"
+        />
+        <button class="botao_minijogo" onclick="checkAnswer()">
+          Confirmar
+        </button>
+      </div>
+
+      <div
+        id="result_message"
+        class="resultado_box"
+        style="display: none"
+      ></div>
+
+      <button
+        class="botao_minijogo"
+        style="margin-top: 20px; display: none"
+        id="new_challenge_btn"
+        onclick="startChallenge(currentLevel)"
+      >
+        Novo Desafio
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Variáveis globais
+    let currentLevel = null;
+    let correctAnswer = null;
+
+    // Função para Capitalizar a primeira letra
+    function capitalize(str) {
+      if (!str) return str;
+      const lower = str.toLowerCase();
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    }
+
+    // Inicia um novo desafio de XP buscando os dados no Flask
+    function startChallenge(nivel) {
+      currentLevel = nivel;
+
+      // Reseta a interface
+      document.getElementById("challenge_area").style.display = "block";
+      document.getElementById("result_message").style.display = "none";
+      document.getElementById("user_answer").value = "";
+      document.getElementById("new_challenge_btn").style.display = "none";
+      document.getElementById("formula_warning").innerHTML = "";
+
+      // Fetch para app.py
+      fetch("/api/calculo_xp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ nivel: nivel }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.erro) {
+            alert(data.erro);
+            return;
+          }
+
+          // Armazena a resposta correta enviada pelo backend
+          correctAnswer = data.xp.answer;
+
+          // Preenche os campos do HTML
+          document.getElementById("level_name").textContent = capitalize(nivel);
+
+          document.getElementById("pokemon_name").textContent = capitalize(
+            data.pokemon.name,
+          );
+          document.getElementById("growth_group").textContent =
+            data.pokemon.growth_group; // Ex: "Rápido"
+          document.getElementById("current_level").textContent =
+            data.pokemon.current_level;
+          document.getElementById("target_level").textContent =
+            data.pokemon.target_level;
+
+          document.getElementById("formula_name").textContent =
+            data.formula.name;
+          document.getElementById("formula_description").textContent =
+            data.formula.description;
+
+          // Renderiza a fórmula com KaTeX
+          const formulaElement = document.getElementById("formula_equation");
+          katex.render(data.formula.equation_tex, formulaElement, {
+            throwOnError: false,
+          });
+
+          // Dicas dinâmicas baseadas na dificuldade
+          if (nivel === "facil") {
+            document.getElementById("formula_warning").innerHTML =
+              "Calcule o XP Total do Nível Alvo e subtraia o XP do Nível Atual!";
+          } else if (nivel === "dificil") {
+            document.getElementById("formula_warning").innerHTML =
+              "Cuidado! Em grupos Erráticos ou Flutuantes, a fórmula muda dependendo do nível em que o Pokémon está.";
+          }
+        })
+        .catch((error) => {
+          console.error("Erro ao iniciar o desafio:", error);
+          alert(
+            'Erro ao carregar desafio. Verifique se a rota "/api/calculo_xp" existe no Flask.',
+          );
+        });
+    }
+
+    // Verifica a resposta inserida pelo usuário
+    function checkAnswer() {
+      const userAnswer = parseInt(
+        document.getElementById("user_answer").value.trim(),
+      );
+      const resultMessage = document.getElementById("result_message");
+      const newChallengeBtn = document.getElementById("new_challenge_btn");
+
+      let isCorrect = false;
+
+      if (!isNaN(userAnswer) && userAnswer === correctAnswer) {
+        isCorrect = true;
+      }
+
+      // Mostra resultado e botão de novo desafio
+      resultMessage.style.display = "block";
+      newChallengeBtn.style.display = "block";
+
+      if (isCorrect) {
+        resultMessage.className = "resultado_box correto";
+        resultMessage.innerHTML = `✅ Perfeito! São necessários exatos <strong>${correctAnswer} XP</strong> para evoluir/subir de nível.`;
+      } else {
+        resultMessage.className = "resultado_box incorreto";
+        resultMessage.innerHTML = `❌ Incorreto! A quantidade correta de experiência necessária era: <strong>${correctAnswer}</strong>.`;
+      }
+    }
+  </script>
 </section>
 {% endblock %}
