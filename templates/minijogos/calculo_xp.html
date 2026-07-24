@@ -11,6 +11,11 @@
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css"
 />
+<script
+  defer
+  src="{{ url_for('static', filename='js/calculadora-widget.js') }}"
+  data-calculator-src="{{ url_for('static', filename='calculadora.html') }}"
+></script>
 <title>Cálculo de XP</title>
 {% endblock %} {% block content %}
 <section>
@@ -51,17 +56,21 @@
       <div class="info_box">
         <div class="grade_stats">
           <div>
+            <img id="pokemon_img" class="pokemon_img" />
+          </div>
+          <div style="margin: auto">
             <p><strong>🧬 POKÉMON:</strong> <span id="pokemon_name"></span></p>
+            <br />
             <p>
               <strong>📈 Grupo de Crescimento:</strong>
               <span id="growth_group"></span>
             </p>
-          </div>
-          <div>
+            <br />
             <p>
               <strong>⬇️ Nível Atual (L1):</strong>
               <span id="current_level"></span>
             </p>
+            <br />
             <p>
               <strong>⬆️ Nível Alvo (L2):</strong>
               <span id="target_level"></span>
@@ -155,7 +164,7 @@
 
           // Preenche os campos do HTML
           document.getElementById("level_name").textContent = capitalize(nivel);
-
+          document.getElementById("pokemon_img").src = data.pokemon.pokemon_img;
           document.getElementById("pokemon_name").textContent = capitalize(
             data.pokemon.name,
           );

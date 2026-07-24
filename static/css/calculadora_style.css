@@ -127,3 +127,92 @@ button:focus-visible {
     transition: none;
   }
 }
+
+/* Corpo da Pokédex */
+.pokedex {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+/* Calculadora e painel direito */
+.calculator,
+.notes-panel {
+  width: 320px;
+  background: linear-gradient(160deg, var(--calc-body), #b30000);
+  border-radius: 28px;
+  padding: 20px;
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Retira os cantos da parte interna */
+.calculator {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.notes-panel {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Dobradiça */
+.hinge {
+  width: 36px;
+  background: #770000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 8px rgba(0, 0, 0, 0.6),
+    0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.hinge-line {
+  width: 20px;
+  height: 60px;
+  margin: 8px 0;
+  border-radius: 10px;
+  background: #4d0000;
+  box-shadow:
+    inset 2px 0 4px rgba(255, 255, 255, 0.15),
+    inset -2px 0 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Tela da direita */
+.notes-display {
+  background: var(--display-bg);
+  border-radius: 18px;
+  padding: 18px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-display h2 {
+  margin: 0 0 15px;
+  color: var(--text-light);
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+
+#notes {
+  flex: 1;
+  resize: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-light);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#notes::placeholder {
+  color: #999;
+}

@@ -70,8 +70,8 @@ h1 {
 
 .botao_minijogo {
   display: inline-block;
-  background-color: yellow;
-  color: darkgoldenrod;
+  background-color: #ffff1a;
+  color: #6b4e06;
   border: 1px solid black; /* Espessura + Tipo da borda + Cor */
   border-radius: 8px; /* Arredonda a borda */
   text-decoration: none;
@@ -89,8 +89,8 @@ h1 {
 }
 
 .botao_minijogo:hover {
-  background-color: rgb(255, 255, 219);
-  color: rgb(230, 172, 27);
+  background-color: #ffffff;
+  color: #6b4d00;
 }
 
 .container {

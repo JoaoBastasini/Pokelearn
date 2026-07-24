@@ -4,33 +4,12 @@
   {% block title %}Pokélearn{%endblock %}
   <!---->
   {% block content %}
-  <!-- 
-    Transforma o texto em uma imgagem, para estilização de forma
-    Imagem .svg distorcida, faz o arco no título para familiaridade com a logo da franquia 
-    -->
-  <svg class="svg_centralizado" width="400" height="150" viewBox="0 0 450 200">
-    <defs>
-      <path id="img_curvada" d="M 10,180 Q 225,20 440,180" />
-    </defs>
-
-    <!-- Faz com que todas as letras caibam na imagem, sem cortar as pontas -->
-    <text class="img_titulo">
-      <textPath
-        href="#img_curvada"
-        startOffset="50%"
-        textLength="440"
-        lengthAdjust="spacingAndGlyphs"
-      >
-        POKÉLEARN
-      </textPath>
-    </text>
-  </svg>
 
   <img
     class="img_centralizada"
-    src="{{ url_for('static', filename='imagens/pokeball-pokemon-svgrepo-com.svg') }}"
-    alt="Pokébola"
-    style="width: 800px; height: 300px"
+    src="{{ url_for('static', filename='imagens/logo.png') }}"
+    alt="Pokélearn"
+    style="width: 379px; height: 403px"
   />
   <div class="menu_principal">
     <h3
@@ -58,7 +37,7 @@
       >Probabilidade de Eventos!</a
     >
     <a href="{{ url_for('calculo_logic_page') }}" class="botao_minijogo"
-      >Qual meu tipo?</a
+      >Qual é o tipo?</a
     >
   </div>
   <div

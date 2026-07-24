@@ -13,35 +13,59 @@
     <link rel="stylesheet" href="/static/css/calculadora_style.css" />
   </head>
   <body>
-    <div class="calculator" id="calculator">
-      <div class="display">
-        <div class="history" id="history"></div>
-        <div class="current" id="current">0</div>
-      </div>
-      <div class="keys">
-        <button class="fn" data-action="clear">AC</button>
-        <button class="fn" data-action="backspace">⌫</button>
-        <button class="fn" data-action="percent">%</button>
-        <button class="op" data-action="divide">÷</button>
+      <div class="pokedex">
+        <!-- Lado esquerdo -->
+        <div class="calculator" id="calculator">
+          <div class="display">
+            <div class="history" id="history"></div>
+            <div class="current" id="current">0</div>
+          </div>
 
-        <button data-digit="7">7</button>
-        <button data-digit="8">8</button>
-        <button data-digit="9">9</button>
-        <button class="op" data-action="multiply">×</button>
+          <div class="keys">
+            <button class="fn" data-action="clear">AC</button>
+            <button class="fn" data-action="backspace">⌫</button>
+            <button class="fn" data-action="percent">%</button>
+            <button class="op" data-action="divide">÷</button>
 
-        <button data-digit="4">4</button>
-        <button data-digit="5">5</button>
-        <button data-digit="6">6</button>
-        <button class="op" data-action="subtract">−</button>
+            <button data-digit="7">7</button>
+            <button data-digit="8">8</button>
+            <button data-digit="9">9</button>
+            <button class="op" data-action="multiply">×</button>
 
-        <button data-digit="1">1</button>
-        <button data-digit="2">2</button>
-        <button data-digit="3">3</button>
-        <button class="op" data-action="add">+</button>
+            <button data-digit="4">4</button>
+            <button data-digit="5">5</button>
+            <button data-digit="6">6</button>
+            <button class="op" data-action="subtract">−</button>
 
-        <button class="zero" data-digit="0">0</button>
-        <button data-digit=".">.</button>
-        <button class="equals" data-action="equals">=</button>
+            <button data-digit="1">1</button>
+            <button data-digit="2">2</button>
+            <button data-digit="3">3</button>
+            <button class="op" data-action="add">+</button>
+
+            <button class="zero" data-digit="0">0</button>
+            <button data-digit=".">.</button>
+            <button class="equals" data-action="equals">=</button>
+          </div>
+        </div>
+
+        <!-- Dobradiça -->
+        <div class="hinge">
+          <div class="hinge-line"></div>
+          <div class="hinge-line"></div>
+          <div class="hinge-line"></div>
+        </div>
+
+        <!-- Lado direito -->
+        <div class="notes-panel">
+          <div class="notes-display">
+            <h2>ANOTAÇÕES</h2>
+
+            <textarea
+              id="notes"
+              placeholder="Escreva suas anotações..."
+            ></textarea>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -164,6 +188,13 @@
 
         updateDisplay();
       })();
+      const notes = document.getElementById("notes");
+
+      notes.value = localStorage.getItem("pokedex_notes") || "";
+
+      notes.addEventListener("input", () => {
+        localStorage.setItem("pokedex_notes", notes.value);
+      });
     </script>
   </body>
 </html>

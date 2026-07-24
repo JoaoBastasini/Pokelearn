@@ -275,6 +275,7 @@ def setup_xp(df, nivel):
     poke = candidatos.sample(1).reset_index().iloc[0]
 
     name = poke['Name']
+    img = poke['Image URL']
     group = poke['Experience Group']
     current_level = random.randint(5, 81)
     target_level = random.randint(current_level + 1, current_level + 15)
@@ -285,7 +286,8 @@ def setup_xp(df, nivel):
         "name": name,
         "growth_group": group,
         "current_level": current_level,
-        "target_level": target_level
+        "target_level": target_level,
+        "pokemon_img": img,
     }
 
     return [poke_info, answer]

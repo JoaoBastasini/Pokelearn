@@ -35,7 +35,7 @@
   position: fixed;
   bottom: 92px;
   right: 24px;
-  width: 320px;
+  width: 700px;
   max-width: calc(100vw - 32px);
   border-radius: 22px;
   overflow: hidden;
@@ -60,7 +60,7 @@
   border: none;
 }
 
-@media (max-width: 420px) {
+@media (max-width: 1000px) {
   #calc-widget-panel {
     right: 16px;
     left: 16px;
