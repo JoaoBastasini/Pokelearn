@@ -1,0 +1,146 @@
+#tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+#tutorial-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#tutorial-modal {
+  background: #1b1e27;
+  border-radius: 20px;
+  padding: 16px;
+  width: max(900px, 1440px);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7);
+  position: relative;
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.2s ease;
+}
+#tutorial-overlay.open #tutorial-modal {
+  transform: translateY(0) scale(1);
+}
+
+#tutorial-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  color: #f4f5f7;
+  cursor: pointer;
+  padding: 6px;
+  line-height: 1;
+  border-radius: 8px;
+  z-index: 1;
+  transition: background 0.15s ease;
+}
+#tutorial-close:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+#tutorial-img-wrap {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0a0c11;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+#tutorial-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+#tutorial-progress {
+  display: flex;
+  gap: 6px;
+  margin: 14px 4px 0;
+}
+.tutorial-dot {
+  height: 4px;
+  flex: 1;
+  border-radius: 2px;
+  background: #2a2d38;
+  transition: background 0.2s ease;
+}
+.tutorial-dot.active {
+  background: #ff0000;
+}
+
+#tutorial-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  gap: 12px;
+}
+
+#tutorial-step-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  color: #8b8fa3;
+}
+
+#tutorial-prev,
+#tutorial-next {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.08s ease;
+}
+#tutorial-prev:active,
+#tutorial-next:active {
+  transform: scale(0.95);
+}
+
+#tutorial-prev {
+  background: #2a2d38;
+  color: #8b8fa3;
+}
+#tutorial-prev:hover {
+  background: #34384a;
+  color: #f4f5f7;
+}
+#tutorial-prev:disabled {
+  opacity: 0.3;
+  cursor: default;
+  transform: none;
+}
+
+#tutorial-next {
+  background: #ff0000;
+  color: #ffffff;
+}
+#tutorial-next:hover {
+  background: #3b4cca;
+  color: #ffde00;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #tutorial-overlay,
+  #tutorial-modal,
+  .tutorial-dot {
+    transition: none;
+  }
+}

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/calculadora_style.css" />
+  </head>
+  <body>
+      <div class="pokedex">
+        <!-- Lado esquerdo -->
+        <div class="calculator" id="calculator">
+          <div class="display">
+            <div class="history" id="history"></div>
+            <div class="current" id="current">0</div>
+          </div>
+
+          <div class="keys">
+            <button class="fn" data-action="clear">AC</button>
+            <button class="fn" data-action="backspace">⌫</button>
+            <button class="fn" data-action="percent">%</button>
+            <button class="op" data-action="divide">÷</button>
+
+            <button data-digit="7">7</button>
+            <button data-digit="8">8</button>
+            <button data-digit="9">9</button>
+            <button class="op" data-action="multiply">×</button>
+
+            <button data-digit="4">4</button>
+            <button data-digit="5">5</button>
+            <button data-digit="6">6</button>
+            <button class="op" data-action="subtract">−</button>
+
+            <button data-digit="1">1</button>
+            <button data-digit="2">2</button>
+            <button data-digit="3">3</button>
+            <button class="op" data-action="add">+</button>
+
+            <button class="zero" data-digit="0">0</button>
+            <button data-digit=".">.</button>
+            <button class="equals" data-action="equals">=</button>
+          </div>
+        </div>
+
+        <!-- Dobradiça -->
+        <div class="hinge">
+          <div class="hinge-line"></div>
+          <div class="hinge-line"></div>
+          <div class="hinge-line"></div>
+        </div>
+
+        <!-- Lado direito -->
+        <div class="notes-panel">
+          <div class="notes-display">
+            <h2>ANOTAÇÕES</h2>
+
+            <textarea
+              id="notes"
+              placeholder="Escreva suas anotações..."
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const historyEl = document.getElementById("history");
+        const currentEl = document.getElementById("current");
+        const calc = document.getElementById("calculator");
+
+        let current = "0";
+        let previous = null;
+        let operator = null;
+        let overwrite = true;
+
+        const ops = {
+          add: (a, b) => a + b,
+          subtract: (a, b) => a - b,
+          multiply: (a, b) => a * b,
+          divide: (a, b) => (b === 0 ? NaN : a / b),
+        };
+        const opSymbols = {
+          add: "+",
+          subtract: "−",
+          multiply: "×",
+          divide: "÷",
+        };
+
+        function formatNumber(n) {
+          if (!isFinite(n)) return "Erro";
+          let s = n.toString();
+          if (s.length > 12) s = parseFloat(n.toPrecision(10)).toString();
+          return s;
+        }
+
+        function updateDisplay() {
+          currentEl.textContent = current;
+          historyEl.textContent =
+            previous !== null
+              ? `${formatNumber(previous)} ${opSymbols[operator]}`
+              : "";
+        }
+
+        function inputDigit(d) {
+          if (overwrite) {
+            current = d === "." ? "0." : d;
+            overwrite = false;
+            return;
+          }
+          if (d === "." && current.includes(".")) return;
+          if (current === "0" && d !== ".") {
+            current = d;
+            return;
+          }
+          current += d;
+        }
+
+        function chooseOperator(op) {
+          if (operator && !overwrite) compute();
+          previous = parseFloat(current);
+          operator = op;
+          overwrite = true;
+        }
+
+        function compute() {
+          if (operator === null || previous === null) return;
+          const result = ops[operator](previous, parseFloat(current));
+          current = formatNumber(result);
+          operator = null;
+          previous = null;
+          overwrite = true;
+        }
+
+        function clearAll() {
+          current = "0";
+          previous = null;
+          operator = null;
+          overwrite = true;
+        }
+
+        function backspace() {
+          if (overwrite) return;
+          current = current.slice(0, -1) || "0";
+          if (current === "-") current = "0";
+        }
+
+        function percent() {
+          current = formatNumber(parseFloat(current) / 100);
+        }
+
+        calc.addEventListener("click", (e) => {
+          const btn = e.target.closest("button");
+          if (!btn) return;
+          const { digit, action } = btn.dataset;
+
+          if (digit !== undefined) inputDigit(digit);
+          else if (action === "clear") clearAll();
+          else if (action === "backspace") backspace();
+          else if (action === "percent") percent();
+          else if (action === "equals") compute();
+          else if (action in ops) chooseOperator(action);
+
+          updateDisplay();
+        });
+
+        window.addEventListener("keydown", (e) => {
+          if (e.key >= "0" && e.key <= "9") inputDigit(e.key);
+          else if (e.key === ".") inputDigit(".");
+          else if (e.key === "+") chooseOperator("add");
+          else if (e.key === "-") chooseOperator("subtract");
+          else if (e.key === "*") chooseOperator("multiply");
+          else if (e.key === "/") {
+            e.preventDefault();
+            chooseOperator("divide");
+          } else if (e.key === "Enter" || e.key === "=") compute();
+          else if (e.key === "Backspace") backspace();
+          else if (e.key === "Escape") clearAll();
+          else return;
+          updateDisplay();
+        });
+
+        updateDisplay();
+      })();
+      const notes = document.getElementById("notes");
+
+      notes.value = localStorage.getItem("pokedex_notes") || "";
+
+      notes.addEventListener("input", () => {
+        localStorage.setItem("pokedex_notes", notes.value);
+      });
+    </script>
+  </body>
+</html>
