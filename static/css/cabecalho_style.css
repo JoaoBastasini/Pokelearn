@@ -4,13 +4,13 @@
    =========================== */
 
 @font-face {
-  font-family: "pokemon_titulo";
-  src: url("fonte_titulo/pokemon_solid.ttf") format("truetype");
+  font-family: "pokemon_simples";
+  src: url("/static/fonte_corpo/pokemon_jogo.ttf") format("truetype");
 }
 
 @font-face {
-  font-family: "pokemon_simples";
-  src: url("fonte_corpo/pokemon_jogo.ttf") format("truetype");
+  font-family: "pokemon_titulo";
+  src: url("/static/fonte_titulo/pokemon_solid.ttf") format("truetype");
 }
 
 .cabecalho {

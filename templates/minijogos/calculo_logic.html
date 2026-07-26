@@ -1,14 +1,25 @@
 {% extends "cabecalho.html" %}
+<!---->
+{% block extra_css %}
+<meta charset="UTF-8" />
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/geral_style.css') }}"
+/>
+<title>Cálculo de XP</title>
 
-{% block title %}Qual Meu Tipo?{% endblock %}
-
-{% block content %}
+{% block title %}Qual Meu Tipo?{% endblock %} {% block content %}
 <svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
   <defs>
     <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
   </defs>
   <text class="img_titulo">
-    <textPath href="#img_curvada" startOffset="50%" textLength="480" lengthAdjust="spacingAndGlyphs">
+    <textPath
+      href="#img_curvada"
+      startOffset="50%"
+      textLength="480"
+      lengthAdjust="spacingAndGlyphs"
+    >
       Qual Meu Tipo?
     </textPath>
   </text>
@@ -17,9 +28,15 @@
 <div class="container">
   <h3 style="text-align: center">Selecione o Nível de Dificuldade:</h3>
   <div class="botoes_nivel">
-    <button class="facil" type="button" onclick="startChallenge('facil')">FÁCIL</button>
-    <button class="medio" type="button" onclick="startChallenge('medio')">MÉDIO</button>
-    <button class="dificil" type="button" onclick="startChallenge('dificil')">DIFÍCIL</button>
+    <button class="facil" type="button" onclick="startChallenge('facil')">
+      FÁCIL
+    </button>
+    <button class="medio" type="button" onclick="startChallenge('medio')">
+      MÉDIO
+    </button>
+    <button class="dificil" type="button" onclick="startChallenge('dificil')">
+      DIFÍCIL
+    </button>
   </div>
 
   <div id="challenge_area" style="display: none">
@@ -42,18 +59,24 @@
     <div class="grupo_entrada">
       <p>Selecione <strong id="required_selections"></strong> tipo(s):</p>
       <div id="type_options" class="opcoes_tipos"></div>
-      <button class="botao_minijogo" type="button" onclick="checkAnswer()">Confirmar</button>
+      <button class="botao_minijogo" type="button" onclick="checkAnswer()">
+        Confirmar
+      </button>
     </div>
 
     <div id="result_message" class="resultado_box" style="display: none"></div>
-    <button id="new_challenge_btn" class="botao_minijogo" type="button" style="display: none" onclick="startChallenge(currentLevel)">
+    <button
+      id="new_challenge_btn"
+      class="botao_minijogo"
+      type="button"
+      style="display: none"
+      onclick="startChallenge(currentLevel)"
+    >
       Novo Desafio
     </button>
   </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script>
   let currentLevel = null;
   let knownTypes = [];
@@ -73,7 +96,8 @@
         body: JSON.stringify({ nivel: level }),
       });
       const data = await response.json();
-      if (!response.ok || data.erro) throw new Error(data.erro || "Não foi possível carregar o desafio.");
+      if (!response.ok || data.erro)
+        throw new Error(data.erro || "Não foi possível carregar o desafio.");
 
       knownTypes = data.puzzle.known_types;
       correctTypes = data.answers.correct_types;
@@ -83,25 +107,37 @@
       document.getElementById("pokemon_name").textContent = data.pokemon.name;
       document.getElementById("pokemon_img").src = data.pokemon.image_url;
       document.getElementById("pokemon_img").alt = data.pokemon.name;
-      document.getElementById("puzzle_description").textContent = data.puzzle.description_text;
-      document.getElementById("required_selections").textContent = requiredSelections;
+      document.getElementById("puzzle_description").textContent =
+        data.puzzle.description_text;
+      document.getElementById("required_selections").textContent =
+        requiredSelections;
 
       const knownTypesLine = document.getElementById("known_types_line");
       knownTypesLine.style.display = knownTypes.length ? "block" : "none";
-      document.getElementById("known_types").textContent = knownTypes.join(" / ");
+      document.getElementById("known_types").textContent =
+        knownTypes.join(" / ");
 
       document.getElementById("clues").innerHTML = data.puzzle.clues
-        .map((clue) => `<li>Um ataque do tipo <strong>${clue.type}</strong> causa ${clue.interaction} (x${clue.multiplier}).</li>`)
+        .map(
+          (clue) =>
+            `<li>Um ataque do tipo <strong>${clue.type}</strong> causa ${clue.interaction} (x${clue.multiplier}).</li>`,
+        )
         .join("");
 
-      document.getElementById("type_options").innerHTML = data.puzzle.candidate_types
-        .filter((type) => !knownTypes.includes(type))
-        .map((type) => `<label><input type="checkbox" name="pokemon_type" value="${type}" /> ${type}</label>`)
-        .join("");
+      document.getElementById("type_options").innerHTML =
+        data.puzzle.candidate_types
+          .filter((type) => !knownTypes.includes(type))
+          .map(
+            (type) =>
+              `<label><input type="checkbox" name="pokemon_type" value="${type}" /> ${type}</label>`,
+          )
+          .join("");
 
-      document.querySelectorAll('input[name="pokemon_type"]').forEach((input) => {
-        input.addEventListener("change", limitSelections);
-      });
+      document
+        .querySelectorAll('input[name="pokemon_type"]')
+        .forEach((input) => {
+          input.addEventListener("change", limitSelections);
+        });
     } catch (error) {
       document.getElementById("challenge_area").style.display = "none";
       alert(error.message);
@@ -109,15 +145,21 @@
   }
 
   function limitSelections(event) {
-    const selected = document.querySelectorAll('input[name="pokemon_type"]:checked');
+    const selected = document.querySelectorAll(
+      'input[name="pokemon_type"]:checked',
+    );
     if (selected.length > requiredSelections) event.target.checked = false;
   }
 
   function checkAnswer() {
-    const selectedTypes = Array.from(document.querySelectorAll('input[name="pokemon_type"]:checked')).map((input) => input.value);
+    const selectedTypes = Array.from(
+      document.querySelectorAll('input[name="pokemon_type"]:checked'),
+    ).map((input) => input.value);
     const submittedTypes = [...knownTypes, ...selectedTypes].sort();
     const expectedTypes = [...correctTypes].sort();
-    const isCorrect = selectedTypes.length === requiredSelections && JSON.stringify(submittedTypes) === JSON.stringify(expectedTypes);
+    const isCorrect =
+      selectedTypes.length === requiredSelections &&
+      JSON.stringify(submittedTypes) === JSON.stringify(expectedTypes);
     const resultMessage = document.getElementById("result_message");
 
     resultMessage.style.display = "block";

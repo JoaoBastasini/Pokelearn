@@ -273,6 +273,7 @@ def setup_xp(df, nivel):
     poke = candidatos.sample(1).reset_index().iloc[0]
 
     name = poke['Name']
+    img = poke['Image URL']
     group = poke['Experience Group']
     current_level = random.randint(5, 81)
     target_level = random.randint(current_level + 1, current_level + 15)
@@ -283,7 +284,8 @@ def setup_xp(df, nivel):
         "name": name,
         "growth_group": group,
         "current_level": current_level,
-        "target_level": target_level
+        "target_level": target_level,
+        "pokemon_img": img,
     }
 
     return [poke_info, answer]
@@ -306,7 +308,7 @@ def get_xp_formula(poke, dificuldade):
     return {
         "name": name,
         "description": "Calcule o XP total de cada nível e subtraia: X = E(L2) - E(L1).",
-        "equation_tex": rf"{base_equation}\qquad X = E({level_2}) - E({level_1})",
+        "equation_tex": rf"{base_equation}\qquad \\ X = E({level_2}) - E({level_1})",
         "difficulty": dificuldade,
     }
 
@@ -854,7 +856,10 @@ if __name__ == '__main__':
     server = Server(app.wsgi_app)
     server.watch('app.py')
     server.watch('templates/*.html')
-    server.watch('templates/**/*.html')
-    server.watch('static/*.css')
+    server.watch('templates/minijogos/*.html')
+    server.watch('static/css/*.css')
     server.watch('static/imagens/**/*')
+    server.watch('static/tutorial/*')
+    server.watch('static/*.hmtl')
+    server.watch('static/js/*.js')
     server.serve(port=5000)
