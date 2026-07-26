@@ -16,6 +16,8 @@
   src="{{ url_for('static', filename='js/calculadora-widget.js') }}"
   data-calculator-src="{{ url_for('static', filename='calculadora.html') }}"
 ></script>
+<link rel="stylesheet" href="/static/css/tutorial.css" />
+<script defer src="/static/js/tutorial.js"></script>
 <title>Cálculo de XP</title>
 {% endblock %} {% block content %}
 <section>
@@ -37,14 +39,34 @@
   </svg>
 
   <div class="container">
-    <h3 style="text-align: center">Selecione o Nível de Dificuldade:</h3>
-
-    <div class="botoes_nivel">
-      <button class="facil" onclick="startChallenge('facil')">FÁCIL</button>
-      <button class="medio" onclick="startChallenge('medio')">MÉDIO</button>
-      <button class="dificil" onclick="startChallenge('dificil')">
-        DIFÍCIL
+    <div style="display: flex; align-items: center; gap: 16px">
+      <button
+        data-tutorial-open
+        data-tutorial-images='[
+        "/static/tutorial/Tutorial-Calculadora.png",
+        "/static/tutorial/Tutorial-XP-1.png",
+        "/static/tutorial/Tutorial-XP-2.png",
+        "/static/tutorial/Tutorial-XP-3.png"
+      ]'
+        class="tutorial-btn"
+        title="Ajuda"
+      >
+        <img src="{{ url_for('static', filename='imagens/help.png') }}" />
+        Ajuda
       </button>
+
+      <div>
+        <h3 style="text-align: center; margin: 0 0 12px">
+          Selecione o Nível de Dificuldade:
+        </h3>
+        <div class="botoes_nivel">
+          <button class="facil" onclick="startChallenge('facil')">FÁCIL</button>
+          <button class="medio" onclick="startChallenge('medio')">MÉDIO</button>
+          <button class="dificil" onclick="startChallenge('dificil')">
+            DIFÍCIL
+          </button>
+        </div>
+      </div>
     </div>
 
     <div id="challenge_area" style="display: none">
@@ -192,7 +214,7 @@
               "Calcule o XP Total do Nível Alvo e subtraia o XP do Nível Atual!";
           } else if (nivel === "dificil") {
             document.getElementById("formula_warning").innerHTML =
-              "Cuidado! Em grupos Erráticos ou Flutuantes, a fórmula muda dependendo do nível em que o Pokémon está.";
+              "Cuidado! Em grupos Erráticos ou Flutuantes, a fórmula muda dependendo do nível do Pokémon.";
           }
         })
         .catch((error) => {

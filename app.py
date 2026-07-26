@@ -311,7 +311,7 @@ def get_xp_formula(poke, dificuldade):
     return {
         "name": name,
         "description": "Calcule o XP total de cada nível e subtraia: X = E(L2) - E(L1).",
-        "equation_tex": rf"{base_equation}\qquad X = E({level_2}) - E({level_1})",
+        "equation_tex": rf"{base_equation}\qquad \\ X = E({level_2}) - E({level_1})",
         "difficulty": dificuldade,
     }
 
@@ -778,9 +778,10 @@ if __name__ == '__main__':
     server = Server(app.wsgi_app)
     server.watch('app.py')
     server.watch('templates/*.html')
-    server.watch('templates/**/*.html')
-    server.watch('static/*.css')
+    server.watch('templates/minijogos/*.html')
+    server.watch('static/css/*.css')
     server.watch('static/imagens/**/*')
+    server.watch('static/tutorial/*')
     server.watch('static/*.hmtl')
     server.watch('static/js/*.js')
     server.serve(port=5000)
