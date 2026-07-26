@@ -443,8 +443,8 @@ def setup_prob_event(df, moves, dificuldade):
     pokemon = df.iloc[random.choice(pokemon_indexes)]
 
     accuracy_percent = int(float(move["accuracy"]))
-    success_probability = accuracy_percent / 100
-    failure_probability = 1 - success_probability
+    success_probability = round(accuracy_percent / 100, 10)
+    failure_probability = round(1 - success_probability, 10)
 
     pokemon_types = [str(pokemon["Primary Typing"])]
     if pd.notna(pokemon["Secondary Typing"]):
@@ -605,16 +605,16 @@ def setup_prob_event(df, moves, dificuldade):
         "equation_tex": equation,
         "difficulty": dificuldade,
         "variables": {
-            "p": success_probability,
-            "q": failure_probability,
+            "p": round(success_probability, 10),
+            "q": round(failure_probability, 10),
             "n": trials,
         },
     }
     answers = {
-        "probability_decimal": probability,
+        "probability_decimal": round(probability, 10),
         "probability_percentage": round(probability * 100, 2),
-        "expected_hits": trials * success_probability,
-        "variance": trials * success_probability * failure_probability,
+        "expected_hits": round(trials * success_probability, 10),
+        "variance": round(trials * success_probability * failure_probability, 10),
     }
     return {
         "pokemon": pokemon_info,
