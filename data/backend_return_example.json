@@ -243,7 +243,7 @@
       },
       "answers": {
         "probability_decimal": "number entre 0 e 1",
-        "probability_percentage": "number entre 0 e 100",
+        "probability_percentage": "number entre 0 e 100, arredondado para duas casas decimais",
         "expected_hits": "number com o valor esperado de acertos",
         "variance": "number com a variância"
       }
