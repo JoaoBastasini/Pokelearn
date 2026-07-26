@@ -2,167 +2,280 @@
   "/api/calculo_batalha": {
     "method": "POST",
     "example_request_body": {
-      "nivel": "medio"
+      "nivel": "string com facil, medio ou dificil"
     },
     "example_response_body": {
       "attacker": {
-        "attacker_name": "bulbasaur",
-        "attacker_image_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+        "attacker_name": "string",
+        "attacker_image_url": "string com a URL da imagem do Pokémon",
         "attacker_types": [
-          "Grama",
-          "Venenoso"
+          "string"
         ],
-        "level": 50,
-        "atk_stat_name": "Attack",
-        "atk_value": 49
+        "level": "integer",
+        "atk_stat_name": "string com Attack ou Special Attack",
+        "atk_value": "integer"
       },
       "defender": {
-        "defender_name": "charmander",
-        "defender_image_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png",
+        "defender_name": "string",
+        "defender_image_url": "string com a URL da imagem do Pokémon",
         "defender_types": [
-          "Fogo"
+          "string"
         ],
-        "def_stat_name": "Defense",
-        "def_value": 43
+        "def_stat_name": "string com Defense ou Special Defense",
+        "def_value": "integer"
       },
       "move_info": {
-        "name": "Bomba de sementes",
-        "attack_type": "Grama",
-        "power": 80
+        "name": "string",
+        "attack_type": "string",
+        "power": "integer"
       },
       "battle": {
-        "stab_mod": 1.5,
-        "type_effectiveness": 0.5,
-        "base_calc_no_random": 42.11162790697674,
-        "range_min": 26,
-        "range_max": 31
+        "stab_mod": "number",
+        "type_effectiveness": "number",
+        "base_calc_no_random": "number",
+        "range_min": "integer",
+        "range_max": "integer"
       },
       "formula": {
-        "name": "MÉDIO",
-        "description": "Use a fórmula padrão Pokémon. Lembre-se de seguir a ordem das operações.",
-        "equation_tex": "\\text{Dano} = \\lfloor \\left( \\left[ \\left( \\frac{2 \\times \\text{Nível}}{5} + 2 \\right) \\times \\frac{\\text{Atk}}{\\text{Def}} \\times \\frac{\\text{Poder}}{50} \\right] + 2 \\right) \\times \\text{STAB} \\times \\text{Eficácia} \\rfloor",
-        "answer_for_level": 31
+        "name": "string com o nome da dificuldade",
+        "description": "string com a orientação para o cálculo",
+        "equation_tex": "string com a fórmula em LaTeX",
+        "answer_for_level": "integer ou string com a faixa [mínimo - máximo]"
       }
     }
   },
   "/api/calculo_xp": {
     "method": "POST",
     "example_request_body": {
-      "nivel": "medio"
+      "nivel": "string com facil, medio ou dificil"
     },
     "example_response_body": {
       "pokemon": {
-        "name": "bulbasaur",
-        "growth_group": "Médio-Lento",
-        "current_level": 20,
-        "target_level": 25
+        "name": "string",
+        "growth_group": "string",
+        "current_level": "integer",
+        "target_level": "integer"
       },
       "formula": {
-        "name": "Crescimento Médio-Lento",
-        "description": "Calcule o XP total de cada nível e subtraia: X = E(L2) - E(L1).",
-        "equation_tex": "E(L) = \\left\\lfloor\\frac{6L^3}{5}\\right\\rfloor - 15L^2 + 100L - 140\\qquad X = E(25) - E(20)",
-        "difficulty": "medio"
+        "name": "string com o nome do grupo de crescimento",
+        "description": "string com a orientação para o cálculo",
+        "equation_tex": "string com a fórmula em LaTeX",
+        "difficulty": "string com facil, medio ou dificil"
       },
       "xp": {
-        "answer": 6275
+        "answer": "integer"
       }
     }
   },
   "/api/calculo_captura": {
     "method": "POST",
     "example_request_body": {
-      "is_lucky": true
+      "is_lucky": "boolean"
     },
     "example_response_body": {
       "encounter": {
-        "pokemon_name": "snorlax",
-        "image_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/143.png",
-        "hp_max": 160,
-        "hp_current": 45,
-        "catch_rate": 25,
-        "status_condition": "Dormindo",
-        "status_modifier": 2.5
+        "pokemon_name": "string",
+        "image_url": "string com a URL da imagem do Pokémon",
+        "hp_max": "integer",
+        "hp_current": "integer",
+        "catch_rate": "integer",
+        "status_condition": "string",
+        "status_modifier": "number"
       },
       "ball": {
-        "name": "Ultra Ball",
-        "modifier": 2.0
+        "name": "string",
+        "modifier": "number"
       },
       "capture": {
-        "is_critical_capture": true,
-        "required_shakes": 1,
-        "is_captured": true
+        "is_critical_capture": "boolean",
+        "required_shakes": "integer",
+        "is_captured": "boolean"
       },
       "formula": {
-        "name": "Probabilidade de Captura",
-        "description": "Calcule o valor de captura, converta-o na chance de cada movimento da Pokébola e eleve o resultado a 1.",
-        "equation_tex_base": "a = \\left\\lfloor\\frac{(3 \\times \\text{HP Max} - 2 \\times \\text{HP Atual}) \\times \\text{Taxa} \\times \\text{Modificador da Bola}}{3 \\times \\text{HP Max}} \\times \\text{Modificador de Status}\\right\\rfloor",
-        "equation_tex_probability": "b = \\left\\lfloor\\frac{1048560}{\\sqrt[4]{16711680/a}}\\right\\rfloor\\qquad P = \\left(\\frac{b}{65536}\\right)^{1}",
-        "required_shakes": 1
+        "name": "string",
+        "description": "string com a orientação para o cálculo",
+        "equation_tex_base": "string com a fórmula base em LaTeX",
+        "equation_tex_probability": "string com a fórmula da probabilidade em LaTeX",
+        "required_shakes": "integer"
       },
       "answers": {
-        "base_chance": 101,
-        "shake_threshold": 51989,
-        "probability_decimal": 0.7932891845703125,
-        "probability_percentage": "79.33%"
+        "base_chance": "integer",
+        "shake_threshold": "integer",
+        "probability_decimal": "number entre 0 e 1",
+        "probability_percentage": "string com a porcentagem e o símbolo %"
       }
     }
   },
   "/api/calculo_prob_event": {
     "method": "POST",
     "example_request_body": {
-      "nivel": "medio"
+      "nivel": "string com facil, medio ou dificil"
+    },
+    "possible_scenarios": {
+      "facil": [
+        {
+          "type": "miss_once",
+          "trials": 1,
+          "target_successes": null,
+          "description_example": "Qual é a chance de errar o golpe?",
+          "equation_tex_example": "P(\\text{erro}) = 1 - p"
+        },
+        {
+          "type": "at_least_one_hit",
+          "trials_range": {
+            "minimum": 2,
+            "maximum": 4
+          },
+          "target_successes": null,
+          "description_example": "Qual é a chance de acertar pelo menos uma vez?",
+          "equation_tex_example": "P(X \\geq 1) = 1 - (1-p)^n"
+        }
+      ],
+      "medio": [
+        {
+          "type": "consecutive_hits",
+          "trials_range": {
+            "minimum": 2,
+            "maximum": 4
+          },
+          "target_successes": "igual ao número de tentativas",
+          "description_example": "Qual é a chance de acertar n vezes seguidas?",
+          "equation_tex_example": "P = p^n"
+        },
+        {
+          "type": "consecutive_misses",
+          "trials_range": {
+            "minimum": 2,
+            "maximum": 4
+          },
+          "target_successes": 0,
+          "description_example": "Qual é a chance de errar n vezes seguidas?",
+          "equation_tex_example": "P = (1-p)^n"
+        },
+        {
+          "type": "first_hit_on_attempt",
+          "trials_range": {
+            "minimum": 2,
+            "maximum": 5
+          },
+          "target_successes": 1,
+          "description_example": "Qual é a chance de acertar pela primeira vez exatamente na nª tentativa?",
+          "equation_tex_example": "P(T=n) = (1-p)^{n-1}p"
+        },
+        {
+          "type": "exactly_k_hits",
+          "trials_range": {
+            "minimum": 3,
+            "maximum": 5
+          },
+          "target_successes": "integer entre 1 e trials-1",
+          "description_example": "Qual é a chance de acertar exatamente k vezes?",
+          "equation_tex_example": "P(X=k) = \\binom{n}{k}p^k(1-p)^{n-k}"
+        }
+      ],
+      "dificil": [
+        {
+          "type": "at_least_k_hits",
+          "trials_range": {
+            "minimum": 5,
+            "maximum": 8
+          },
+          "target_successes": "integer entre 2 e trials-2",
+          "description_example": "Qual é a chance de acertar pelo menos k vezes?",
+          "equation_tex_example": "P(X\\geq k) = \\sum_{i=k}^{n}\\binom{n}{i}p^i(1-p)^{n-i}"
+        },
+        {
+          "type": "at_most_k_hits",
+          "trials_range": {
+            "minimum": 5,
+            "maximum": 8
+          },
+          "target_successes": "integer entre 1 e trials-2",
+          "description_example": "Qual é a chance de acertar no máximo k vezes?",
+          "equation_tex_example": "P(X\\leq k) = \\sum_{i=0}^{k}\\binom{n}{i}p^i(1-p)^{n-i}"
+        },
+        {
+          "type": "between_k_hits",
+          "trials_range": {
+            "minimum": 5,
+            "maximum": 8
+          },
+          "target_successes": {
+            "minimum": "integer",
+            "maximum": "integer"
+          },
+          "description_example": "Qual é a chance de acertar entre a e b vezes, inclusive?",
+          "equation_tex_example": "P(a\\leq X\\leq b) = \\sum_{i=a}^{b}\\binom{n}{i}p^i(1-p)^{n-i}"
+        }
+      ]
     },
     "example_response_body": {
+      "pokemon": {
+        "name": "string",
+        "image_url": "string com a URL da imagem do Pokémon",
+        "types": [
+          "string"
+        ]
+      },
+      "move": {
+        "name": "string",
+        "type": "string",
+        "accuracy": "integer com a precisão percentual do golpe",
+        "accuracy_decimal": "number com a precisão decimal do golpe"
+      },
       "scenario": {
-        "type": "acuracia_tentativa_exata",
-        "attack_name": "Hydro Pump",
-        "base_accuracy": 0.8,
-        "target_attempt": 3,
-        "description_text": "Qual é a probabilidade de um ataque com 80% de precisão acertar somente na terceira tentativa?"
+        "type": "string com um dos valores de possible_scenarios",
+        "description_text": "string com o enunciado pronto",
+        "trials": "integer com o número de tentativas",
+        "target_successes": "null, integer ou objeto com minimum e maximum",
+        "events_are_independent": "boolean"
       },
       "formula": {
-        "name": "Probabilidade de Eventos Compostos",
-        "description": "Multiplique a probabilidade de falha nas tentativas iniciais pela probabilidade de sucesso na última tentativa.",
-        "equation_tex": "P = (1 - \\text{acurácia})^2 \\times \\text{acurácia}",
-        "difficulty": "medio"
+        "name": "string",
+        "description": "string com a orientação para o cálculo",
+        "equation_tex": "string com a fórmula em LaTeX",
+        "difficulty": "string com facil, medio ou dificil",
+        "variables": {
+          "p": "number com a chance de acerto",
+          "q": "number com a chance de erro",
+          "n": "integer com o número de tentativas"
+        }
       },
       "answers": {
-        "probability_decimal": 0.032,
-        "probability_percentage": 3.2
+        "probability_decimal": "number entre 0 e 1",
+        "probability_percentage": "number entre 0 e 100",
+        "expected_hits": "number com o valor esperado de acertos",
+        "variance": "number com a variância"
       }
     }
   },
   "/api/calculo_logic": {
     "method": "POST",
     "example_request_body": {
-      "nivel": "dificil"
+      "nivel": "string com facil, medio ou dificil"
     },
     "example_response_body": {
       "puzzle": {
-        "description_text": "Se recebo dano supereficaz de Fogo e meus ataques são supereficazes contra Água, qual é o meu tipo?",
+        "description_text": "string com o enunciado pronto",
         "clues": [
           {
-            "interaction": "weak_to",
-            "type": "Fogo"
-          },
-          {
-            "interaction": "strong_against",
-            "type": "Água"
+            "interaction": "string",
+            "type": "string"
           }
         ]
       },
       "game_settings": {
-        "show_type_chart": false,
-        "difficulty": "dificil"
+        "show_type_chart": "boolean",
+        "difficulty": "string com facil, medio ou dificil"
       },
       "formula": {
-        "name": "Dedução Lógica de Tipos",
-        "description": "Analise as fraquezas e vantagens ofensivas para deduzir o tipo oculto.",
-        "equation_tex": null,
-        "difficulty": "dificil"
+        "name": "string",
+        "description": "string com a orientação para resolver o desafio",
+        "equation_tex": "null ou string com a fórmula em LaTeX",
+        "difficulty": "string com facil, medio ou dificil"
       },
       "answers": {
-        "correct_type": "Grama"
+        "correct_type": "string"
       }
     }
   }
