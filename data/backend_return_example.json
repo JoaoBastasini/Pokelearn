@@ -4,6 +4,15 @@
     "example_request_body": {
       "nivel": "string com facil, medio ou dificil"
     },
+    "conditional_fields": {
+      "formula.range_min": "integer presente somente no nível dificil",
+      "formula.range_max": "integer presente somente no nível dificil"
+    },
+    "difficulty_rules": {
+      "facil": "fórmula simplificada com Poder, STAB e eficácia; resposta inteira",
+      "medio": "fórmula padrão sem fator aleatório; resposta inteira de dano máximo",
+      "dificil": "fórmula padrão com fator aleatório de 0.85 a 1.0; resposta em faixa"
+    },
     "example_response_body": {
       "attacker": {
         "attacker_name": "string",
@@ -40,7 +49,9 @@
         "name": "string com o nome da dificuldade",
         "description": "string com a orientação para o cálculo",
         "equation_tex": "string com a fórmula em LaTeX",
-        "answer_for_level": "integer ou string com a faixa [mínimo - máximo]"
+        "answer_for_level": "integer no fácil e médio; string [mínimo - máximo] no difícil",
+        "range_min": "integer presente somente no nível dificil",
+        "range_max": "integer presente somente no nível dificil"
       }
     }
   },
@@ -48,6 +59,20 @@
     "method": "POST",
     "example_request_body": {
       "nivel": "string com facil, medio ou dificil"
+    },
+    "difficulty_rules": {
+      "facil": [
+        "Lento",
+        "Médio-Rápido",
+        "Rápido"
+      ],
+      "medio": [
+        "Médio-Lento"
+      ],
+      "dificil": [
+        "Errático",
+        "Flutuante"
+      ]
     },
     "example_response_body": {
       "pokemon": {
@@ -71,6 +96,10 @@
     "method": "POST",
     "example_request_body": {
       "is_lucky": "boolean"
+    },
+    "request_behavior": {
+      "is_lucky_true": "força uma captura crítica com apenas um movimento da Pokébola",
+      "is_lucky_false": "permite 5% de chance de captura crítica; caso contrário, exige quatro movimentos"
     },
     "example_response_body": {
       "encounter": {
@@ -254,18 +283,51 @@
     "example_request_body": {
       "nivel": "string com facil, medio ou dificil"
     },
+    "difficulty_rules": {
+      "facil": {
+        "pokemon_types": 1,
+        "known_types_count": 0,
+        "required_selections": 1,
+        "show_type_chart": true
+      },
+      "medio": {
+        "pokemon_types": 2,
+        "known_types_count": 1,
+        "required_selections": 1,
+        "show_type_chart": true
+      },
+      "dificil": {
+        "pokemon_types": 2,
+        "known_types_count": 0,
+        "required_selections": 2,
+        "show_type_chart": true
+      }
+    },
+    "answer_validation": "junte known_types às alternativas selecionadas, ordene os tipos e compare com answers.correct_types",
     "example_response_body": {
+      "pokemon": {
+        "name": "string",
+        "image_url": "string com a URL da imagem do Pokémon"
+      },
       "puzzle": {
         "description_text": "string com o enunciado pronto",
         "clues": [
           {
             "interaction": "string",
-            "type": "string"
+            "type": "string",
+            "multiplier": "number"
           }
-        ]
+        ],
+        "candidate_types": [
+          "string com um dos 18 tipos disponíveis como alternativa"
+        ],
+        "known_types": [
+          "string; vazio no fácil e difícil, contém um tipo no médio"
+        ],
+        "required_selections": "integer; 1 no fácil e médio, 2 no difícil"
       },
       "game_settings": {
-        "show_type_chart": "boolean",
+        "show_type_chart": true,
         "difficulty": "string com facil, medio ou dificil"
       },
       "formula": {
@@ -275,7 +337,9 @@
         "difficulty": "string com facil, medio ou dificil"
       },
       "answers": {
-        "correct_type": "string"
+        "correct_types": [
+          "string; um tipo no fácil e dois tipos no médio e difícil"
+        ]
       }
     }
   }

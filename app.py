@@ -20,7 +20,7 @@ app = Flask(__name__)
 # -------- Carregar Dados --------
 
 # Carrega os dados de forma relativa à raiz do projeto, independentemente
-# do diretório de onde o app é executado.
+# do diretório de onde o app é executado
 PASTA_DADOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
 try:
@@ -37,10 +37,7 @@ try:
     tipos_moves = set(dados_moves["type"].dropna().astype(str).str.strip())
     tipos_invalidos = tipos_moves.difference(TYPE_CHART_OFFENSIVE)
     if tipos_invalidos:
-        raise ValueError(
-            "Tipos incompatíveis em damage_moves.csv: "
-            f"{sorted(tipos_invalidos)}"
-        )
+        raise ValueError("Tipos incompatíveis em damage_moves.csv: " f"{sorted(tipos_invalidos)}")
     print("Dados de Ataques carregados com sucesso.")
 except FileNotFoundError:
     print("ERRO: O arquivo damage_moves.csv não foi encontrado. Verifique o caminho.")
@@ -55,17 +52,17 @@ def get_type_effectiveness(attack_type, defender_types):
     for d_type in defender_types:
         # Primeiro .get retorna o dicionário do tipo de ataque
         # Segundo .get retorna o valor de eficácia contra o tipo defensor, no caso de dual type, entra nesse trecho duas vezes (for)
-        # Se não tem nada no dicionário, o ataque é neutro, multiplicador 1.
+        # Se não tem nada no dicionário, o ataque é neutro, multiplicador 1
         effectiveness = TYPE_CHART_OFFENSIVE.get(attack_type, {}).get(d_type, 1.0)
         multiplier *= effectiveness
     return multiplier
 
-# Escolhe aleatoriamente o atacante, defensor, níveis e ataque.
+# Escolhe aleatoriamente o atacante, defensor, níveis e ataque
 def setup_battle(df, moves):
     
     # Escolhe os Pokémon
     # Faz um DF com um único elemento, que possua ataques
-    # Reseta o índice, o original vira uma coluna chamada 'index' e o novo é 0.
+    # Reseta o índice, o original vira uma coluna chamada 'index' e o novo é 0
     # Seleciona o primeiro e único elemento com iloc[0]
     atacantes_com_golpes = df[df["Damage Move IDs"] != "[]"]
     attacker_data = atacantes_com_golpes.sample(1).reset_index().iloc[0]
@@ -76,7 +73,7 @@ def setup_battle(df, moves):
 
     # Garante que o nível do defensor fique entre 40 e 60 e a diferença seja no máximo 10
     # level_def = random.randint(max(40, level_atk - 10), min(60, level_atk + 10))
-    # Aparentemente o nível do defensor não é usado no cálculo de dano, então foi comentado, mas caso venha a calhar, está aí.
+    # Aparentemente o nível do defensor não é usado no cálculo de dano, então foi comentado, mas caso venha a calhar, está aí
 
     # Escolhe um ataque que o pokémon atacante pode aprender
     many_move_ids = json.loads(attacker_data["Damage Move IDs"])
@@ -168,19 +165,19 @@ def setup_battle(df, moves):
 def get_challenge_formula(params, nivel_dificuldade):
     # Gera o dicionário de fórmula e a resposta esperada baseada no nível
     
-    # NÍVEL FÁCIL --> focar em STAB e Eficácia.
+    # NÍVEL FÁCIL --> focar em STAB e Eficácia
     # Dano = (Poder * 0.5 + 10) * STAB * Eficácia
     if nivel_dificuldade == 'facil':
         base_calc_facil = (params['move_info']['power'] * 0.5) + 10 # Cálculo base simplificado (sem stats e nível)
         answer_facil = np.floor(base_calc_facil * params['battle']['stab_mod'] * params['battle']['type_effectiveness'])
-        
+
         return {
             "name": "FÁCIL",
             "description": "Foque apenas nos multiplicadores de Poder, STAB e Eficácia de Tipo.",
             "equation_tex": r"\text{Dano} = \lfloor (\frac{\text{Poder}}{2} + 10) \times \text{STAB} \times \text{Eficácia} \rfloor",
             "answer_for_level": int(answer_facil)
         }
-        
+
     # NÍVEL MÉDIO --> focada no dano exato sem o fator aleatório
     elif nivel_dificuldade == 'medio':
         
@@ -239,7 +236,7 @@ def calc_xp(group, start, target):
             case "Flutuante":
                 if n <= 15:
                     return (n**3 * (((n + 1) // 3) + 24)) // 50
-                elif n <= 36:
+                elif n <= 35:
                     return (n**3 * (n + 14)) // 50
                 else:
                     return (n**3 * ((n // 2) + 32)) // 50
@@ -362,11 +359,7 @@ def setup_captura(df, is_lucky):
         "Great Ball": {"weight": 30, "modifier": 1.5},
         "Ultra Ball": {"weight": 10, "modifier": 2.0}
     }
-    ball_name = random.choices(
-        population=list(balls.keys()),
-        weights=[i["weight"] for i in balls.values()],
-        k=1
-    )[0]
+    ball_name = random.choices(population=list(balls.keys()), weights=[i["weight"] for i in balls.values()], k=1)[0]
     ball_modifier = balls[ball_name]["modifier"]
 
     # Sorteia Status
@@ -378,18 +371,14 @@ def setup_captura(df, is_lucky):
         "Envenenado": {"weight": 1, "modifier": 1.5},
         "Queimado": {"weight": 1, "modifier": 1.5}
     }
-    status = random.choices(
-        population=list(status_conditions.keys()),
-        weights=[i["weight"] for i in status_conditions.values()],
-        k=1
-    )[0]
+    status = random.choices(population=list(status_conditions.keys()), weights=[i["weight"] for i in status_conditions.values()], k=1)[0]
     status_modifier = status_conditions[status]["modifier"]
 
     # Sorteia HP atual
     hp_percentage = random.randint(1, 100)
     hp_current = max(1, hp_percentage * hp_max // 100)
 
-    # Calcula o valor de captura base e a chance final.
+    # Calcula o valor de captura base e a chance final
     base_chance = int((((3 * hp_max - 2 * hp_current) * catch_rate * ball_modifier) / (3 * hp_max)) * status_modifier)
 
     if base_chance <= 0:
@@ -477,9 +466,7 @@ def setup_prob_event(df, moves, dificuldade):
     }
 
     if dificuldade == "facil":
-        scenario_type = random.choice(
-            ["miss_once", "at_least_one_hit"]
-        )
+        scenario_type = random.choice(["miss_once", "at_least_one_hit"])
         if scenario_type == "miss_once":
             trials = 1
             probability = failure_probability
@@ -504,14 +491,7 @@ def setup_prob_event(df, moves, dificuldade):
             successes = None
 
     elif dificuldade == "medio":
-        scenario_type = random.choice(
-            [
-                "consecutive_hits",
-                "consecutive_misses",
-                "first_hit_on_attempt",
-                "exactly_k_hits",
-            ]
-        )
+        scenario_type = random.choice(["consecutive_hits", "consecutive_misses", "first_hit_on_attempt", "exactly_k_hits"])
         if scenario_type == "consecutive_hits":
             trials = random.randint(2, 4)
             probability = success_probability ** trials
@@ -552,9 +532,7 @@ def setup_prob_event(df, moves, dificuldade):
         else:
             trials = random.randint(3, 5)
             successes = random.randint(1, trials - 1)
-            probability = binomial_probability(
-                trials, successes, success_probability
-            )
+            probability = binomial_probability(trials, successes, success_probability)
             description = (
                 f"Em {trials} usos de {move_info['name']}, qual é a chance "
                 f"de {pokemon_info['name']} acertar exatamente {successes}?"
@@ -568,16 +546,11 @@ def setup_prob_event(df, moves, dificuldade):
             )
 
     else:
-        scenario_type = random.choice(
-            ["at_least_k_hits", "at_most_k_hits", "between_k_hits"]
-        )
+        scenario_type = random.choice(["at_least_k_hits", "at_most_k_hits", "between_k_hits"])
         trials = random.randint(5, 8)
         if scenario_type == "at_least_k_hits":
             successes = random.randint(2, trials - 2)
-            probability = sum(
-                binomial_probability(trials, k, success_probability)
-                for k in range(successes, trials + 1)
-            )
+            probability = sum(binomial_probability(trials, k, success_probability) for k in range(successes, trials + 1))
             description = (
                 f"Em {trials} usos de {move_info['name']}, qual é a chance "
                 f"de {pokemon_info['name']} acertar pelo menos {successes}?"
@@ -591,10 +564,7 @@ def setup_prob_event(df, moves, dificuldade):
             )
         elif scenario_type == "at_most_k_hits":
             successes = random.randint(1, trials - 2)
-            probability = sum(
-                binomial_probability(trials, k, success_probability)
-                for k in range(successes + 1)
-            )
+            probability = sum(binomial_probability(trials, k, success_probability) for k in range(successes + 1))
             description = (
                 f"Em {trials} usos de {move_info['name']}, qual é a chance "
                 f"de {pokemon_info['name']} acertar no máximo {successes}?"
@@ -610,10 +580,7 @@ def setup_prob_event(df, moves, dificuldade):
             lower = random.randint(1, trials - 3)
             upper = random.randint(lower + 1, trials - 1)
             successes = {"minimum": lower, "maximum": upper}
-            probability = sum(
-                binomial_probability(trials, k, success_probability)
-                for k in range(lower, upper + 1)
-            )
+            probability = sum(binomial_probability(trials, k, success_probability) for k in range(lower, upper + 1))
             description = (
                 f"Em {trials} usos de {move_info['name']}, qual é a chance "
                 f"de {pokemon_info['name']} acertar entre {lower} e {upper} "
@@ -658,6 +625,121 @@ def setup_prob_event(df, moves, dificuldade):
         "scenario": scenario,
         "formula": formula,
         "answers": answers,
+    }
+
+def escolher_ataque_para_pista(ataques, candidatos, tipos_corretos):
+    ataques_uteis = []
+
+    for ataque in ataques:
+        multiplicador_correto = get_type_effectiveness(ataque, tipos_corretos)
+        candidatos_restantes = sum(get_type_effectiveness(ataque, combinacao) == multiplicador_correto for combinacao in candidatos)
+
+        if candidatos_restantes < len(candidatos):
+            ataques_uteis.append((ataque, candidatos_restantes))
+
+    ataques_uteis.sort(key=lambda item: item[1])
+    tres_melhores = ataques_uteis[:3]
+
+    return random.choice(tres_melhores)[0]
+
+
+def setup_logic(df, dificuldade):
+    tipos = list(TYPE_CHART_DEFENSIVE.keys())
+    tipos_ataque = tipos.copy()
+
+    # Monotype para nível fácil
+    if dificuldade == "facil":
+        pokemon = df[df["Secondary Typing"].isna()].sample(1).iloc[0]
+        tipos_corretos = [pokemon["Primary Typing"]]
+        candidatos = [[tipo] for tipo in tipos]
+        tipos_conhecidos = []
+    else:
+        # Doubletype para níveis médio e difícil
+        pokemon = df[df["Secondary Typing"].notna()].sample(1).iloc[0]
+        tipos_corretos = sorted([pokemon["Primary Typing"], pokemon["Secondary Typing"]])
+        # Transforma e tupla e normaliza
+        # Impede que aconteça algo como Fogo/Voador e Voador/Fogo
+        # Isso quebraria a lógica de apenas um resultado
+        # Ficaria 0 ou 2, nunca uma única resposta final
+        combinacoes = {
+            tuple(sorted([linha["Primary Typing"], linha["Secondary Typing"]]))
+            for lin, linha in df[df["Secondary Typing"].notna()].iterrows()
+        }
+        # Volta de tupla para lista
+        candidatos = [list(combinacao) for combinacao in combinacoes]
+
+        # Revela um dos tipos na dificuldade média
+        # Não revela nenhum tipo na difícil
+        tipos_conhecidos = ([random.choice(tipos_corretos)] if dificuldade == "medio" else [])
+
+        # Elimina os candidatos que não compartilham o tipo já conhecido
+        # Já que não são mais possíveis, logo não são candidatos
+        if tipos_conhecidos:
+            candidatos = [
+                combinacao for combinacao in candidatos
+                if tipos_conhecidos[0] in combinacao
+            ]
+
+    # Escolhe pistas que identificam somente a combinação correta
+    ataques_disponiveis = tipos_ataque.copy()
+    random.shuffle(ataques_disponiveis)
+    pistas = []
+
+    while len(candidatos) > 1:
+        ataque_escolhido = escolher_ataque_para_pista(ataques_disponiveis, candidatos, tipos_corretos)
+        multiplicador = get_type_effectiveness(ataque_escolhido, tipos_corretos)
+
+        candidatos = [
+            combinacao for combinacao in candidatos
+            if get_type_effectiveness(ataque_escolhido, combinacao)
+            == multiplicador
+        ]
+
+        ataques_disponiveis.remove(ataque_escolhido)
+        pistas.append({"interaction": {0: "não causa dano", 0.25: "pouquíssimo eficaz", 0.5: "pouco eficaz", 1.0: "dano normal", 2.0: "super eficaz", 4.0: "extremamente eficaz"}[multiplicador], "type": ataque_escolhido, "multiplier": multiplicador})
+
+    if dificuldade == "facil":
+        descricao = (
+            "Use as pistas e a tabela completa para descobrir o tipo defensivo."
+        )
+    elif dificuldade == "medio":
+        descricao = (
+            "Um dos tipos já foi revelado. Use as pistas para descobrir o "
+            "segundo tipo do Pokémon."
+        )
+    else:
+        descricao = (
+            "Use somente as pistas para descobrir os dois tipos do Pokémon."
+        )
+
+    return {
+        "pokemon": {
+            "name": pokemon["Name"],
+            "image_url": pokemon["Image URL"],
+        },
+        "puzzle": {
+            "description_text": descricao,
+            "clues": pistas,
+            "candidate_types": tipos,
+            "known_types": tipos_conhecidos,
+            "required_selections": len(tipos_corretos) - len(tipos_conhecidos),
+        },
+        "game_settings": {
+            "show_type_chart": True,
+            "difficulty": dificuldade,
+        },
+        "formula": {
+            "name": "Tabela de Tipos",
+            "description": (
+                "Cruze as relações de dano de todas as pistas. O tipo correto "
+                "é o único que satisfaz todas elas."
+            ),
+            "equation_tex": None,
+            "difficulty": dificuldade,
+        },
+        "answers": {
+            "correct_types": tipos_corretos,
+        },
     }
 
 
@@ -706,13 +788,7 @@ def calculo_batalha():
     # Obtém a fórmula para a dificuldade
     formula = get_challenge_formula(pokeinfo, nivel_dificuldade)
     
-    return jsonify({
-        "attacker": pokeinfo["attacker"],
-        "defender": pokeinfo["defender"],
-        "move_info": pokeinfo["move_info"],
-        "battle": pokeinfo["battle"],
-        "formula": formula
-    })
+    return jsonify({"attacker": pokeinfo["attacker"], "defender": pokeinfo["defender"], "move_info": pokeinfo["move_info"], "battle": pokeinfo["battle"], "formula": formula})
 
 @app.route('/api/calculo_xp', methods=['POST'])
 def calculo_xp():
@@ -727,11 +803,7 @@ def calculo_xp():
     # Obtém a fórmula para a dificuldade
     formula = get_xp_formula(pokeinfo[0], nivel_dificuldade)
 
-    return jsonify({
-        "pokemon": pokeinfo[0],
-        "formula": formula,
-        "xp": {"answer": pokeinfo[1]}
-    })
+    return jsonify({"pokemon": pokeinfo[0], "formula": formula, "xp": {"answer": pokeinfo[1]}})
 
 @app.route('/api/calculo_captura', methods=['POST'])
 def calculo_captura():
@@ -746,13 +818,7 @@ def calculo_captura():
     # Obtém a fórmula para a dificuldade
     formula = get_captura_formula(pokeinfo[2]["is_critical_capture"])
 
-    return jsonify({
-        "encounter": pokeinfo[0],
-        "ball": pokeinfo[1],
-        "capture": pokeinfo[2],
-        "formula": formula,
-        "answers": pokeinfo[3]
-    })
+    return jsonify({"encounter": pokeinfo[0], "ball": pokeinfo[1], "capture": pokeinfo[2], "formula": formula, "answers": pokeinfo[3]})
 
 
 @app.route('/api/calculo_prob_event', methods=['POST'])
@@ -766,6 +832,18 @@ def calculo_prob_event():
         return jsonify({"erro": "Dados de ataques não carregados"})
 
     challenge = setup_prob_event(dados_pokemon, dados_moves, nivel_dificuldade)
+
+    return jsonify(challenge)
+
+@app.route('/api/calculo_logic', methods=['POST'])
+def calculo_logic():
+    data = request.get_json(silent=True) or {}
+    nivel_dificuldade = data.get('nivel', 'medio')
+
+    if dados_pokemon.empty:
+        return jsonify({"erro": "Dados de Pokémon não carregados"})
+
+    challenge = setup_logic(dados_pokemon, nivel_dificuldade)
 
     return jsonify(challenge)
 
