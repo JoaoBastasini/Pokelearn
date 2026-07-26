@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from livereload import Server
 import json
+import math
 import pandas as pd
 import numpy as np
 import random
@@ -439,6 +440,228 @@ def setup_captura(df, is_lucky):
         answers
     ]
 
+def binomial_probability(trials, successes, success_probability):
+    # Probabilidade de exatamente x sucessos y em trials
+    # math.comb calcula combinação de n elementos tomados k a k
+    # (Coeficiente Binomial)
+    return (
+        math.comb(trials, successes)
+        * success_probability ** successes
+        * (1 - success_probability) ** (trials - successes)
+    )
+
+def setup_prob_event(df, moves, dificuldade):
+
+    # Sorteia um golpe impreciso e um Pokémon que aprende esse golpe
+    inaccurate_moves = moves[moves["accuracy_below_100"] == True]
+    move = inaccurate_moves.sample(1).iloc[0]
+    pokemon_indexes = json.loads(move["pokemon_row_indexes"])
+    pokemon = df.iloc[random.choice(pokemon_indexes)]
+
+    accuracy_percent = int(float(move["accuracy"]))
+    success_probability = accuracy_percent / 100
+    failure_probability = 1 - success_probability
+
+    pokemon_types = [str(pokemon["Primary Typing"])]
+    if pd.notna(pokemon["Secondary Typing"]):
+        pokemon_types.append(str(pokemon["Secondary Typing"]))
+
+    pokemon_info = {
+        "name": str(pokemon["Name"]),
+        "image_url": str(pokemon["Image URL"]),
+        "types": pokemon_types,
+    }
+    move_info = {
+        "name": str(move["name"]),
+        "type": str(move["type"]),
+        "accuracy": accuracy_percent,
+        "accuracy_decimal": success_probability,
+    }
+
+    if dificuldade == "facil":
+        scenario_type = random.choice(
+            ["miss_once", "at_least_one_hit"]
+        )
+        if scenario_type == "miss_once":
+            trials = 1
+            probability = failure_probability
+            description = (
+                f"{pokemon_info['name']} usa {move_info['name']}, que possui "
+                f"{accuracy_percent}% de precisão. Qual é a chance de errar?"
+            )
+            formula_description = "Calcule o complemento da chance de acerto."
+            equation = r"P(\text{erro}) = 1 - p"
+            successes = None
+        else:
+            trials = random.randint(2, 4)
+            probability = 1 - failure_probability ** trials
+            description = (
+                f"{pokemon_info['name']} usa {move_info['name']} {trials} "
+                "vezes. Qual é a chance de acertar pelo menos uma vez?"
+            )
+            formula_description = (
+                "Use o complemento da probabilidade de errar todas as tentativas."
+            )
+            equation = rf"P(X \geq 1) = 1 - (1-p)^{{{trials}}}"
+            successes = None
+
+    elif dificuldade == "medio":
+        scenario_type = random.choice(
+            [
+                "consecutive_hits",
+                "consecutive_misses",
+                "first_hit_on_attempt",
+                "exactly_k_hits",
+            ]
+        )
+        if scenario_type == "consecutive_hits":
+            trials = random.randint(2, 4)
+            probability = success_probability ** trials
+            description = (
+                f"Qual é a chance de {pokemon_info['name']} acertar "
+                f"{move_info['name']} {trials} vezes seguidas?"
+            )
+            formula_description = (
+                "Multiplique as probabilidades dos acertos independentes."
+            )
+            equation = rf"P = p^{{{trials}}}"
+            successes = trials
+        elif scenario_type == "consecutive_misses":
+            trials = random.randint(2, 4)
+            probability = failure_probability ** trials
+            description = (
+                f"Qual é a chance de {pokemon_info['name']} errar "
+                f"{move_info['name']} {trials} vezes seguidas?"
+            )
+            formula_description = (
+                "Calcule a chance de erro e multiplique-a em cada tentativa."
+            )
+            equation = rf"P = (1-p)^{{{trials}}}"
+            successes = 0
+        elif scenario_type == "first_hit_on_attempt":
+            trials = random.randint(2, 5)
+            probability = failure_probability ** (trials - 1) * success_probability
+            description = (
+                f"Qual é a chance de {pokemon_info['name']} acertar "
+                f"{move_info['name']} pela primeira vez exatamente na "
+                f"{trials}ª tentativa?"
+            )
+            formula_description = (
+                "Multiplique os erros iniciais pelo acerto da tentativa indicada."
+            )
+            equation = rf"P(T={trials}) = (1-p)^{{{trials - 1}}}p"
+            successes = 1
+        else:
+            trials = random.randint(3, 5)
+            successes = random.randint(1, trials - 1)
+            probability = binomial_probability(
+                trials, successes, success_probability
+            )
+            description = (
+                f"Em {trials} usos de {move_info['name']}, qual é a chance "
+                f"de {pokemon_info['name']} acertar exatamente {successes}?"
+            )
+            formula_description = (
+                "Use a distribuição binomial e conte as ordens possíveis."
+            )
+            equation = (
+                rf"P(X={successes}) = \binom{{{trials}}}{{{successes}}}"
+                rf"p^{{{successes}}}(1-p)^{{{trials - successes}}}"
+            )
+
+    else:
+        scenario_type = random.choice(
+            ["at_least_k_hits", "at_most_k_hits", "between_k_hits"]
+        )
+        trials = random.randint(5, 8)
+        if scenario_type == "at_least_k_hits":
+            successes = random.randint(2, trials - 2)
+            probability = sum(
+                binomial_probability(trials, k, success_probability)
+                for k in range(successes, trials + 1)
+            )
+            description = (
+                f"Em {trials} usos de {move_info['name']}, qual é a chance "
+                f"de {pokemon_info['name']} acertar pelo menos {successes}?"
+            )
+            formula_description = (
+                "Some as probabilidades da quantidade mínima de acertos até o total de tentativas."
+            )
+            equation = (
+                rf"P(X\geq {successes}) = \sum_{{k={successes}}}^{{{trials}}}"
+                rf"\binom{{{trials}}}{{k}}p^k(1-p)^{{{trials}-k}}"
+            )
+        elif scenario_type == "at_most_k_hits":
+            successes = random.randint(1, trials - 2)
+            probability = sum(
+                binomial_probability(trials, k, success_probability)
+                for k in range(successes + 1)
+            )
+            description = (
+                f"Em {trials} usos de {move_info['name']}, qual é a chance "
+                f"de {pokemon_info['name']} acertar no máximo {successes}?"
+            )
+            formula_description = (
+                "Some as probabilidades de zero acertos até a quantidade máxima de acertos indicada."
+            )
+            equation = (
+                rf"P(X\leq {successes}) = \sum_{{k=0}}^{{{successes}}}"
+                rf"\binom{{{trials}}}{{k}}p^k(1-p)^{{{trials}-k}}"
+            )
+        else:
+            lower = random.randint(1, trials - 3)
+            upper = random.randint(lower + 1, trials - 1)
+            successes = {"minimum": lower, "maximum": upper}
+            probability = sum(
+                binomial_probability(trials, k, success_probability)
+                for k in range(lower, upper + 1)
+            )
+            description = (
+                f"Em {trials} usos de {move_info['name']}, qual é a chance "
+                f"de {pokemon_info['name']} acertar entre {lower} e {upper} "
+                "vezes (inclusive)?"
+            )
+            formula_description = (
+                "Some as probabilidades binomiais de todos os valores da faixa."
+            )
+            equation = (
+                rf"P({lower}\leq X\leq {upper}) = "
+                rf"\sum_{{k={lower}}}^{{{upper}}}"
+                rf"\binom{{{trials}}}{{k}}p^k(1-p)^{{{trials}-k}}"
+            )
+
+    scenario = {
+        "type": scenario_type,
+        "description_text": description,
+        "trials": trials,
+        "target_successes": successes,
+        "events_are_independent": True,
+    }
+    formula = {
+        "name": "Probabilidade de Eventos",
+        "description": formula_description,
+        "equation_tex": equation,
+        "difficulty": dificuldade,
+        "variables": {
+            "p": success_probability,
+            "q": failure_probability,
+            "n": trials,
+        },
+    }
+    answers = {
+        "probability_decimal": probability,
+        "probability_percentage": round(probability * 100, 2),
+        "expected_hits": trials * success_probability,
+        "variance": trials * success_probability * failure_probability,
+    }
+    return {
+        "pokemon": pokemon_info,
+        "move": move_info,
+        "scenario": scenario,
+        "formula": formula,
+        "answers": answers,
+    }
+
 
 # -------- Rotas de Navegação --------
 
@@ -541,13 +764,12 @@ def calculo_prob_event():
 
     if dados_pokemon.empty:
         return jsonify({"erro": "Dados de Pokémon não carregados"})
-    
-    pokeinfo = setup_prob_event(dados_pokemon, nivel_dificuldade)
-    formula = get_prov_event_formula(nivel_dificuldade)
+    if dados_moves.empty:
+        return jsonify({"erro": "Dados de ataques não carregados"})
 
-    return jsonify({
-        ""
-    })
+    challenge = setup_prob_event(dados_pokemon, dados_moves, nivel_dificuldade)
+
+    return jsonify(challenge)
 
 
 # -------- Inicialização do Servidor ---------

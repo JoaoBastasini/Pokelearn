@@ -13,6 +13,13 @@ from urllib3.util.retry import Retry
 
 
 API_URL = "https://pokeapi.co/api/v2/move"
+# Alguns golpes multi-hit recentes ainda não expõem min_hits/max_hits na
+# PokéAPI. Mantê-los explícitos evita que voltem ao CSV em uma reimportação.
+MULTI_HIT_MOVE_IDS_WITHOUT_METADATA = {
+    860,  # population-bomb
+    888,  # twin-beam
+    911,  # tachyon-cutter
+}
 COLUNAS = [
     "id",
     "name",
@@ -56,7 +63,17 @@ def transformar_golpe(
     """Retorna uma linha somente para golpes de dano com poder numérico."""
     classe = golpe["damage_class"]["name"]
     poder = golpe["power"]
-    if classe not in {"physical", "special"} or not poder or poder <= 0:
+    meta = golpe.get("meta") or {}
+    max_hits = meta.get("max_hits")
+    multi_hit = (
+        max_hits is not None and max_hits > 1
+    ) or golpe["id"] in MULTI_HIT_MOVE_IDS_WITHOUT_METADATA
+    if (
+        classe not in {"physical", "special"}
+        or not poder
+        or poder <= 0
+        or multi_hit
+    ):
         return None
 
     precisao = golpe["accuracy"]
