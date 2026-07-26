@@ -1,30 +1,124 @@
 {% extends "cabecalho.html" %}
-<!---->
+
+{% block title %}Chance de Captura{% endblock %}
+
 {% block extra_css %}
-<meta charset="UTF-8" />
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-<title>Cálculo de XP</title>
-
+<script src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css" />
 {% endblock %}
-<!---->
+
 {% block content %}
+<svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
+  <defs>
+    <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
+  </defs>
+  <text class="img_titulo">
+    <textPath href="#img_curvada" startOffset="50%" textLength="480" lengthAdjust="spacingAndGlyphs">
+      Chance de Captura
+    </textPath>
+  </text>
+</svg>
 
-<section>
-  <svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
-    <defs>
-      <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
-    </defs>
+<div class="container">
+  <div class="botoes_nivel">
+    <button class="medio" type="button" onclick="startChallenge(false)">NOVO DESAFIO</button>
+    <button class="facil" type="button" onclick="startChallenge(true)">CAPTURA CRÍTICA</button>
+  </div>
 
-    <text class="img_titulo">
-      <textPath
-        href="#img_curvada"
-        startOffset="50%"
-        textLength="480"
-        lengthAdjust="spacingAndGlyphs"
-      >
-        Cálculo de XP
-      </textPath>
-    </text>
-  </svg>
-</section>
+  <div id="challenge_area" style="display: none">
+    <div class="info_box">
+      <div class="grade_stats">
+        <div>
+          <p><strong>Pokémon:</strong> <span id="pokemon_name"></span></p>
+          <img id="pokemon_img" class="pokemon_img" alt="" />
+        </div>
+        <div>
+          <p><strong>HP:</strong> <span id="hp_current"></span>/<span id="hp_max"></span></p>
+          <p><strong>Taxa de captura:</strong> <span id="catch_rate"></span></p>
+          <p><strong>Status:</strong> <span id="status_condition"></span> (x<span id="status_modifier"></span>)</p>
+          <p><strong>Pokébola:</strong> <span id="ball_name"></span> (x<span id="ball_modifier"></span>)</p>
+          <p><strong>Movimentos necessários:</strong> <span id="required_shakes"></span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="formula_LaTex">
+      <h3 id="formula_name"></h3>
+      <p id="formula_description"></p>
+      <div id="formula_base"></div>
+      <div id="formula_probability"></div>
+    </div>
+
+    <div class="grupo_entrada">
+      <label for="user_answer">Chance final de captura (%):</label><br />
+      <input id="user_answer" type="number" min="0" max="100" step="0.01" placeholder="Ex: 35,50" />
+      <button class="botao_minijogo" type="button" onclick="checkAnswer()">Confirmar</button>
+    </div>
+
+    <div id="result_message" class="resultado_box" style="display: none"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let correctPercentage = null;
+
+  function capitalize(value) {
+    if (!value) return "";
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  async function startChallenge(isLucky) {
+    const challengeArea = document.getElementById("challenge_area");
+    const resultMessage = document.getElementById("result_message");
+    challengeArea.style.display = "block";
+    resultMessage.style.display = "none";
+    document.getElementById("user_answer").value = "";
+
+    try {
+      const response = await fetch("/api/calculo_captura", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_lucky: isLucky }),
+      });
+      const data = await response.json();
+      if (!response.ok || data.erro) throw new Error(data.erro || "Não foi possível carregar o desafio.");
+
+      correctPercentage = Number(data.answers.probability_decimal) * 100;
+      document.getElementById("pokemon_name").textContent = capitalize(data.encounter.pokemon_name);
+      document.getElementById("pokemon_img").src = data.encounter.image_url;
+      document.getElementById("pokemon_img").alt = capitalize(data.encounter.pokemon_name);
+      document.getElementById("hp_current").textContent = data.encounter.hp_current;
+      document.getElementById("hp_max").textContent = data.encounter.hp_max;
+      document.getElementById("catch_rate").textContent = data.encounter.catch_rate;
+      document.getElementById("status_condition").textContent = data.encounter.status_condition;
+      document.getElementById("status_modifier").textContent = data.encounter.status_modifier;
+      document.getElementById("ball_name").textContent = data.ball.name;
+      document.getElementById("ball_modifier").textContent = data.ball.modifier;
+      document.getElementById("required_shakes").textContent = data.capture.required_shakes;
+      document.getElementById("formula_name").textContent = data.formula.name;
+      document.getElementById("formula_description").textContent = data.formula.description;
+
+      katex.render(data.formula.equation_tex_base, document.getElementById("formula_base"), { throwOnError: false });
+      katex.render(data.formula.equation_tex_probability, document.getElementById("formula_probability"), { throwOnError: false });
+    } catch (error) {
+      challengeArea.style.display = "none";
+      alert(error.message);
+    }
+  }
+
+  function checkAnswer() {
+    const rawAnswer = document.getElementById("user_answer").value.replace(",", ".");
+    const userAnswer = Number(rawAnswer);
+    const resultMessage = document.getElementById("result_message");
+    const isCorrect = rawAnswer !== "" && Math.abs(userAnswer - correctPercentage) < 0.01;
+
+    resultMessage.style.display = "block";
+    resultMessage.className = `resultado_box ${isCorrect ? "correto" : "incorreto"}`;
+    resultMessage.innerHTML = isCorrect
+      ? `Correto! A chance é <strong>${correctPercentage.toFixed(2)}%</strong>.`
+      : `A resposta esperada era <strong>${correctPercentage.toFixed(2)}%</strong>.`;
+  }
+</script>
 {% endblock %}

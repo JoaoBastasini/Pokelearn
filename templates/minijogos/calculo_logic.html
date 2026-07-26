@@ -1,30 +1,131 @@
 {% extends "cabecalho.html" %}
-<!---->
-{% block extra_css %}
-<meta charset="UTF-8" />
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-<title>Cálculo de XP</title>
 
-{% endblock %}
-<!---->
+{% block title %}Qual Meu Tipo?{% endblock %}
+
 {% block content %}
+<svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
+  <defs>
+    <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
+  </defs>
+  <text class="img_titulo">
+    <textPath href="#img_curvada" startOffset="50%" textLength="480" lengthAdjust="spacingAndGlyphs">
+      Qual Meu Tipo?
+    </textPath>
+  </text>
+</svg>
 
-<section>
-  <svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
-    <defs>
-      <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
-    </defs>
+<div class="container">
+  <h3 style="text-align: center">Selecione o Nível de Dificuldade:</h3>
+  <div class="botoes_nivel">
+    <button class="facil" type="button" onclick="startChallenge('facil')">FÁCIL</button>
+    <button class="medio" type="button" onclick="startChallenge('medio')">MÉDIO</button>
+    <button class="dificil" type="button" onclick="startChallenge('dificil')">DIFÍCIL</button>
+  </div>
 
-    <text class="img_titulo">
-      <textPath
-        href="#img_curvada"
-        startOffset="50%"
-        textLength="480"
-        lengthAdjust="spacingAndGlyphs"
-      >
-        Cálculo de XP
-      </textPath>
-    </text>
-  </svg>
-</section>
+  <div id="challenge_area" style="display: none">
+    <h2>Desafio de Lógica — <span id="level_name"></span></h2>
+
+    <div class="info_box">
+      <p><strong>Pokémon:</strong> <span id="pokemon_name"></span></p>
+      <img id="pokemon_img" class="pokemon_img" alt="" />
+      <p id="puzzle_description"></p>
+      <p id="known_types_line" style="display: none">
+        <strong>Tipo já conhecido:</strong> <span id="known_types"></span>
+      </p>
+    </div>
+
+    <div class="info_box">
+      <h3>Pistas</h3>
+      <ul id="clues"></ul>
+    </div>
+
+    <div class="grupo_entrada">
+      <p>Selecione <strong id="required_selections"></strong> tipo(s):</p>
+      <div id="type_options" class="opcoes_tipos"></div>
+      <button class="botao_minijogo" type="button" onclick="checkAnswer()">Confirmar</button>
+    </div>
+
+    <div id="result_message" class="resultado_box" style="display: none"></div>
+    <button id="new_challenge_btn" class="botao_minijogo" type="button" style="display: none" onclick="startChallenge(currentLevel)">
+      Novo Desafio
+    </button>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let currentLevel = null;
+  let knownTypes = [];
+  let correctTypes = [];
+  let requiredSelections = 0;
+
+  async function startChallenge(level) {
+    currentLevel = level;
+    document.getElementById("challenge_area").style.display = "block";
+    document.getElementById("result_message").style.display = "none";
+    document.getElementById("new_challenge_btn").style.display = "none";
+
+    try {
+      const response = await fetch("/api/calculo_logic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nivel: level }),
+      });
+      const data = await response.json();
+      if (!response.ok || data.erro) throw new Error(data.erro || "Não foi possível carregar o desafio.");
+
+      knownTypes = data.puzzle.known_types;
+      correctTypes = data.answers.correct_types;
+      requiredSelections = data.puzzle.required_selections;
+
+      document.getElementById("level_name").textContent = level.toUpperCase();
+      document.getElementById("pokemon_name").textContent = data.pokemon.name;
+      document.getElementById("pokemon_img").src = data.pokemon.image_url;
+      document.getElementById("pokemon_img").alt = data.pokemon.name;
+      document.getElementById("puzzle_description").textContent = data.puzzle.description_text;
+      document.getElementById("required_selections").textContent = requiredSelections;
+
+      const knownTypesLine = document.getElementById("known_types_line");
+      knownTypesLine.style.display = knownTypes.length ? "block" : "none";
+      document.getElementById("known_types").textContent = knownTypes.join(" / ");
+
+      document.getElementById("clues").innerHTML = data.puzzle.clues
+        .map((clue) => `<li>Um ataque do tipo <strong>${clue.type}</strong> causa ${clue.interaction} (x${clue.multiplier}).</li>`)
+        .join("");
+
+      document.getElementById("type_options").innerHTML = data.puzzle.candidate_types
+        .filter((type) => !knownTypes.includes(type))
+        .map((type) => `<label><input type="checkbox" name="pokemon_type" value="${type}" /> ${type}</label>`)
+        .join("");
+
+      document.querySelectorAll('input[name="pokemon_type"]').forEach((input) => {
+        input.addEventListener("change", limitSelections);
+      });
+    } catch (error) {
+      document.getElementById("challenge_area").style.display = "none";
+      alert(error.message);
+    }
+  }
+
+  function limitSelections(event) {
+    const selected = document.querySelectorAll('input[name="pokemon_type"]:checked');
+    if (selected.length > requiredSelections) event.target.checked = false;
+  }
+
+  function checkAnswer() {
+    const selectedTypes = Array.from(document.querySelectorAll('input[name="pokemon_type"]:checked')).map((input) => input.value);
+    const submittedTypes = [...knownTypes, ...selectedTypes].sort();
+    const expectedTypes = [...correctTypes].sort();
+    const isCorrect = selectedTypes.length === requiredSelections && JSON.stringify(submittedTypes) === JSON.stringify(expectedTypes);
+    const resultMessage = document.getElementById("result_message");
+
+    resultMessage.style.display = "block";
+    document.getElementById("new_challenge_btn").style.display = "inline-block";
+    resultMessage.className = `resultado_box ${isCorrect ? "correto" : "incorreto"}`;
+    resultMessage.innerHTML = isCorrect
+      ? `Correto! O tipo é <strong>${expectedTypes.join(" / ")}</strong>.`
+      : `A resposta esperada era <strong>${expectedTypes.join(" / ")}</strong>.`;
+  }
+</script>
 {% endblock %}

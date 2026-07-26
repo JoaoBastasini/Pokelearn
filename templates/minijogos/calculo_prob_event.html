@@ -1,30 +1,133 @@
 {% extends "cabecalho.html" %}
-<!---->
+
+{% block title %}Probabilidade de Eventos{% endblock %}
+
 {% block extra_css %}
-<meta charset="UTF-8" />
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-<title>Cálculo de XP</title>
-
+<script src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css" />
 {% endblock %}
-<!---->
+
 {% block content %}
+<svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
+  <defs>
+    <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
+  </defs>
+  <text class="img_titulo">
+    <textPath href="#img_curvada" startOffset="50%" textLength="480" lengthAdjust="spacingAndGlyphs">
+      Eventos
+    </textPath>
+  </text>
+</svg>
 
-<section>
-  <svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
-    <defs>
-      <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
-    </defs>
+<div class="container">
+  <h3 style="text-align: center">Selecione o Nível de Dificuldade:</h3>
+  <div class="botoes_nivel">
+    <button class="facil" type="button" onclick="startChallenge('facil')">FÁCIL</button>
+    <button class="medio" type="button" onclick="startChallenge('medio')">MÉDIO</button>
+    <button class="dificil" type="button" onclick="startChallenge('dificil')">DIFÍCIL</button>
+  </div>
 
-    <text class="img_titulo">
-      <textPath
-        href="#img_curvada"
-        startOffset="50%"
-        textLength="480"
-        lengthAdjust="spacingAndGlyphs"
-      >
-        Cálculo de XP
-      </textPath>
-    </text>
-  </svg>
-</section>
+  <div id="challenge_area" style="display: none">
+    <h2>Desafio de Probabilidade — <span id="level_name"></span></h2>
+
+    <div class="info_box">
+      <div class="grade_stats">
+        <div>
+          <p><strong>Pokémon:</strong> <span id="pokemon_name"></span></p>
+          <img id="pokemon_img" class="pokemon_img" alt="" />
+          <p><strong>Tipos:</strong> <span id="pokemon_types"></span></p>
+        </div>
+        <div>
+          <p><strong>Golpe:</strong> <span id="move_name"></span></p>
+          <p><strong>Tipo:</strong> <span id="move_type"></span></p>
+          <p><strong>Precisão:</strong> <span id="move_accuracy"></span>%</p>
+          <p><strong>Tentativas:</strong> <span id="trials"></span></p>
+        </div>
+      </div>
+      <p><strong>Problema:</strong> <span id="scenario_description"></span></p>
+    </div>
+
+    <div class="formula_LaTex">
+      <h3 id="formula_name"></h3>
+      <p id="formula_description"></p>
+      <div id="formula_equation"></div>
+      <p>p = <span id="variable_p"></span> | q = <span id="variable_q"></span> | n = <span id="variable_n"></span></p>
+    </div>
+
+    <div class="grupo_entrada">
+      <label for="user_answer">Probabilidade (%):</label><br />
+      <input id="user_answer" type="number" min="0" max="100" step="0.01" placeholder="Ex: 75,00" />
+      <button class="botao_minijogo" type="button" onclick="checkAnswer()">Confirmar</button>
+    </div>
+
+    <div id="result_message" class="resultado_box" style="display: none"></div>
+    <button id="new_challenge_btn" class="botao_minijogo" type="button" style="display: none" onclick="startChallenge(currentLevel)">
+      Novo Desafio
+    </button>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let currentLevel = null;
+  let correctPercentage = null;
+
+  function formatValue(value) {
+    return String(value ?? "").replace(".", ",");
+  }
+
+  async function startChallenge(level) {
+    currentLevel = level;
+    document.getElementById("challenge_area").style.display = "block";
+    document.getElementById("result_message").style.display = "none";
+    document.getElementById("new_challenge_btn").style.display = "none";
+    document.getElementById("user_answer").value = "";
+
+    try {
+      const response = await fetch("/api/calculo_prob_event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nivel: level }),
+      });
+      const data = await response.json();
+      if (!response.ok || data.erro) throw new Error(data.erro || "Não foi possível carregar o desafio.");
+
+      correctPercentage = Number(data.answers.probability_percentage);
+      document.getElementById("level_name").textContent = level.toUpperCase();
+      document.getElementById("pokemon_name").textContent = data.pokemon.name;
+      document.getElementById("pokemon_img").src = data.pokemon.image_url;
+      document.getElementById("pokemon_img").alt = data.pokemon.name;
+      document.getElementById("pokemon_types").textContent = data.pokemon.types.join(" / ");
+      document.getElementById("move_name").textContent = data.move.name;
+      document.getElementById("move_type").textContent = data.move.type;
+      document.getElementById("move_accuracy").textContent = data.move.accuracy;
+      document.getElementById("trials").textContent = data.scenario.trials;
+      document.getElementById("scenario_description").textContent = data.scenario.description_text;
+      document.getElementById("formula_name").textContent = data.formula.name;
+      document.getElementById("formula_description").textContent = data.formula.description;
+      document.getElementById("variable_p").textContent = formatValue(data.formula.variables.p);
+      document.getElementById("variable_q").textContent = formatValue(data.formula.variables.q);
+      document.getElementById("variable_n").textContent = data.formula.variables.n;
+      katex.render(data.formula.equation_tex, document.getElementById("formula_equation"), { throwOnError: false });
+    } catch (error) {
+      document.getElementById("challenge_area").style.display = "none";
+      alert(error.message);
+    }
+  }
+
+  function checkAnswer() {
+    const rawAnswer = document.getElementById("user_answer").value.replace(",", ".");
+    const userAnswer = Number(rawAnswer);
+    const resultMessage = document.getElementById("result_message");
+    const isCorrect = rawAnswer !== "" && Math.abs(userAnswer - correctPercentage) < 0.01;
+
+    resultMessage.style.display = "block";
+    document.getElementById("new_challenge_btn").style.display = "inline-block";
+    resultMessage.className = `resultado_box ${isCorrect ? "correto" : "incorreto"}`;
+    resultMessage.innerHTML = isCorrect
+      ? `Correto! A probabilidade é <strong>${correctPercentage.toFixed(2)}%</strong>.`
+      : `A resposta esperada era <strong>${correctPercentage.toFixed(2)}%</strong>.`;
+  }
+</script>
 {% endblock %}
