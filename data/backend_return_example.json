@@ -17,9 +17,7 @@
       "attacker": {
         "attacker_name": "string",
         "attacker_image_url": "string com a URL da imagem do Pokémon",
-        "attacker_types": [
-          "string"
-        ],
+        "attacker_types": ["string"],
         "level": "integer",
         "atk_stat_name": "string com Attack ou Special Attack",
         "atk_value": "integer"
@@ -27,9 +25,7 @@
       "defender": {
         "defender_name": "string",
         "defender_image_url": "string com a URL da imagem do Pokémon",
-        "defender_types": [
-          "string"
-        ],
+        "defender_types": ["string"],
         "def_stat_name": "string com Defense ou Special Defense",
         "def_value": "integer"
       },
@@ -61,18 +57,9 @@
       "nivel": "string com facil, medio ou dificil"
     },
     "difficulty_rules": {
-      "facil": [
-        "Lento",
-        "Médio-Rápido",
-        "Rápido"
-      ],
-      "medio": [
-        "Médio-Lento"
-      ],
-      "dificil": [
-        "Errático",
-        "Flutuante"
-      ]
+      "facil": ["Lento", "Médio-Rápido", "Rápido"],
+      "medio": ["Médio-Lento"],
+      "dificil": ["Errático", "Flutuante"]
     },
     "example_response_body": {
       "pokemon": {
@@ -124,7 +111,6 @@
         "name": "string",
         "description": "string com a orientação para o cálculo",
         "equation_tex_base": "string com a fórmula base em LaTeX",
-        "equation_tex_probability": "string com a fórmula da probabilidade em LaTeX",
         "required_shakes": "integer"
       },
       "answers": {
@@ -242,9 +228,7 @@
       "pokemon": {
         "name": "string",
         "image_url": "string com a URL da imagem do Pokémon",
-        "types": [
-          "string"
-        ]
+        "types": ["string"]
       },
       "move": {
         "name": "string",

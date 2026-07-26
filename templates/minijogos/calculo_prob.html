@@ -10,63 +10,77 @@
   rel="stylesheet"
   href="{{ url_for('static', filename='css/geral_style.css') }}"
 />
+<script
+  defer
+  src="{{ url_for('static', filename='js/calculadora-widget.js') }}"
+  data-calculator-src="{{ url_for('static', filename='calculadora.html') }}"
+></script>
+<link rel="stylesheet" href="/static/css/tutorial.css" />
+<script defer src="/static/js/tutorial.js"></script>
 <title>Cálculo de XP</title>
 
 {% endblock %} {% block content %}
-<svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
-  <defs>
-    <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
-  </defs>
-  <text class="img_titulo">
-    <textPath
-      href="#img_curvada"
-      startOffset="50%"
-      textLength="480"
-      lengthAdjust="spacingAndGlyphs"
-    >
-      Chance de Captura
-    </textPath>
-  </text>
-</svg>
-
+<div class="titulo">Chance de Captura</div>
 <div class="container">
-  <div class="botoes_nivel">
-    <button class="medio" type="button" onclick="startChallenge(false)">
-      NOVO DESAFIO
+  <div class="minigame-header">
+    <button
+      data-tutorial-open
+      data-tutorial-images='[
+        "/static/tutorial/Tutorial-Calculadora.png",
+        "/static/tutorial/Tutorial-Dano-1.png",
+        "/static/tutorial/Tutorial-Dano-2.png",
+        "/static/tutorial/Tutorial-Dano-3.png"
+      ]'
+      class="tutorial-btn"
+      title="Ajuda"
+    >
+      <img src="{{ url_for('static', filename='imagens/help.png') }}" />
+      Ajuda
     </button>
-    <button class="facil" type="button" onclick="startChallenge(true)">
-      CAPTURA CRÍTICA
-    </button>
+    <div class="botoes_nivel">
+      <button class="medio" type="button" onclick="startChallenge(false)">
+        NOVO DESAFIO
+      </button>
+      <button class="facil" type="button" onclick="startChallenge(true)">
+        CAPTURA CRÍTICA
+      </button>
+    </div>
   </div>
 
   <div id="challenge_area" style="display: none">
+    <hr />
+    <br />
     <div class="info_box">
       <div class="grade_stats">
         <div>
-          <p><strong>Pokémon:</strong> <span id="pokemon_name"></span></p>
           <img id="pokemon_img" class="pokemon_img" alt="" />
         </div>
-        <div>
+        <div style="margin: auto">
+          <p><strong>🧬 Pokémon:</strong> <span id="pokemon_name"></span></p>
+          <br />
           <p>
-            <strong>HP:</strong> <span id="hp_current"></span>/<span
+            <strong>❤️‍🩹 HP:</strong> <span id="hp_current"></span>/<span
               id="hp_max"
             ></span>
           </p>
-          <p><strong>Taxa de captura:</strong> <span id="catch_rate"></span></p>
           <p>
-            <strong>Status:</strong> <span id="status_condition"></span> (x<span
+            <strong>📈 Taxa de captura:</strong> <span id="catch_rate"></span>
+          </p>
+          <p>
+            <strong>📉 Status:</strong>
+            <span id="status_condition"></span> (x<span
               id="status_modifier"
             ></span
             >)
           </p>
           <p>
-            <strong>Pokébola:</strong> <span id="ball_name"></span> (x<span
+            <strong>🔴 Pokébola:</strong> <span id="ball_name"></span> (x<span
               id="ball_modifier"
             ></span
             >)
           </p>
           <p>
-            <strong>Movimentos necessários:</strong>
+            <strong>🤞 Movimentos necessários:</strong>
             <span id="required_shakes"></span>
           </p>
         </div>
@@ -152,11 +166,6 @@
       katex.render(
         data.formula.equation_tex_base,
         document.getElementById("formula_base"),
-        { throwOnError: false },
-      );
-      katex.render(
-        data.formula.equation_tex_probability,
-        document.getElementById("formula_probability"),
         { throwOnError: false },
       );
     } catch (error) {

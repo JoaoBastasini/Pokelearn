@@ -249,3 +249,10 @@ h1 {
   text-align: center;
   justify-content: center;
 }
+.minigame-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: auto;
+  margin-bottom: 2%;
+}

@@ -318,17 +318,12 @@ def get_captura_formula(is_critical_capture):
     return {
         "name": "Probabilidade de Captura",
         "description": (
-            "Calcule o valor de captura, converta-o na chance de cada movimento "
-            f"da Pokébola e eleve o resultado a {n_shakes}."
+            "Calcule o valor de captura usando a fórmula"
         ),
         "equation_tex_base": (
             r"a = \left\lfloor\frac{(3 \times \text{HP Max} - 2 \times \text{HP Atual}) "
             r"\times \text{Taxa} \times \text{Modificador da Bola}}"
             r"{3 \times \text{HP Max}} \times \text{Modificador de Status}\right\rfloor"
-        ),
-        "equation_tex_probability": (
-            r"b = \left\lfloor\frac{1048560}{\sqrt[4]{16711680/a}}\right\rfloor"
-            rf"\qquad P = \left(\frac{{b}}{{65536}}\right)^{{{n_shakes}}}"
         ),
         "required_shakes": n_shakes
     }
@@ -856,7 +851,7 @@ if __name__ == '__main__':
     server = Server(app.wsgi_app)
     server.watch('app.py')
     server.watch('templates/*.html')
-    server.watch('templates/minijogos/*.html')
+    server.watch('templates/minijogos/*')
     server.watch('static/css/*.css')
     server.watch('static/imagens/**/*')
     server.watch('static/tutorial/*')

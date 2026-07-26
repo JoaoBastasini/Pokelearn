@@ -70,6 +70,12 @@
     </div>
 
     <script>
+      const notes = document.getElementById("notes");
+      notes.value = localStorage.getItem("pokedex_notes") || "";
+      notes.addEventListener("input", () => {
+        localStorage.setItem("pokedex_notes", notes.value);
+      });
+      
       (function () {
         const historyEl = document.getElementById("history");
         const currentEl = document.getElementById("current");
@@ -171,6 +177,9 @@
         });
 
         window.addEventListener("keydown", (e) => {
+          if (document.activeElement.tagName === "TEXTAREA" ||
+          document.activeElement.tagName === "INPUT") return;
+
           if (e.key >= "0" && e.key <= "9") inputDigit(e.key);
           else if (e.key === ".") inputDigit(".");
           else if (e.key === "+") chooseOperator("add");
@@ -188,13 +197,6 @@
 
         updateDisplay();
       })();
-      const notes = document.getElementById("notes");
-
-      notes.value = localStorage.getItem("pokedex_notes") || "";
-
-      notes.addEventListener("input", () => {
-        localStorage.setItem("pokedex_notes", notes.value);
-      });
     </script>
   </body>
 </html>
