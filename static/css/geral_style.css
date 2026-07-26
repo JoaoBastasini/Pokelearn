@@ -97,6 +97,7 @@ h1 {
   /* Container para todo o minijogo */
   max-width: 800px;
   margin: 20px auto;
+  display: grid;
   padding: 20px;
   background-color: white;
   border-radius: 10px;
@@ -209,4 +210,42 @@ h1 {
 }
 .pokemon_img {
   width: 350px;
+}
+.tutorial-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "pokemon_simples";
+  font-size: 0.8rem;
+  width: 10%;
+}
+.tutorial-btn img {
+  width: 100px;
+  height: auto;
+}
+.titulo {
+  font-size: 5rem;
+  font-weight: 100;
+  font-family: "pokemon_titulo", sans-serif;
+  color: rgb(249, 231, 29);
+  text-decoration: none;
+  letter-spacing: 3px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transform: translateY(-10px);
+  text-shadow:
+    2px 2px 1px #000,
+    -2px -2px 1px #000,
+    2px -2px 1px #000,
+    -2px 2px 1px #000;
+  margin: 1% 1% auto;
+  text-align: center;
+  justify-content: center;
 }
