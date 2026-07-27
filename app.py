@@ -313,19 +313,15 @@ def get_xp_formula(poke, dificuldade):
     }
 
 def get_captura_formula(is_critical_capture):
-    n_shakes = 1 if is_critical_capture else 4
+    scale = 180 if is_critical_capture else 256
 
     return {
         "name": "Probabilidade de Captura",
-        "description": (
-            "Calcule o valor de captura usando a fórmula"
-        ),
+        "description": "Escale a chance base e limite o resultado a 100%.",
         "equation_tex_base": (
-            r"a = \left\lfloor\frac{(3 \times \text{HP Max} - 2 \times \text{HP Atual}) "
-            r"\times \text{Taxa} \times \text{Modificador da Bola}}"
-            r"{3 \times \text{HP Max}} \times \text{Modificador de Status}\right\rfloor"
+            rf"P(\text{{captura}}) = \min\left(\frac{{\text{{Chance Base}}}}{{{scale}}}, 1\right)"
         ),
-        "required_shakes": n_shakes
+        "scale": scale
     }
 
 def setup_captura(df, is_lucky):
@@ -340,15 +336,12 @@ def setup_captura(df, is_lucky):
 
     # Captura Crítica?
     is_critical_capture = False
-    n_shakes = 4
     if is_lucky:
         is_critical_capture = True
-        n_shakes = 1
     else:
         critical_roll = random.random()
         if critical_roll < 0.05:  # 5% de chance
             is_critical_capture = True
-            n_shakes = 1
 
     # Sorteia a Pokébola
     balls = {
@@ -375,19 +368,10 @@ def setup_captura(df, is_lucky):
     hp_percentage = random.randint(1, 100)
     hp_current = max(1, hp_percentage * hp_max // 100)
 
-    # Calcula o valor de captura base e a chance final
+    # Calcula o valor de captura base e faz o escalonamento da chance final
     base_chance = int((((3 * hp_max - 2 * hp_current) * catch_rate * ball_modifier) / (3 * hp_max)) * status_modifier)
-
-    if base_chance <= 0:
-        shake_threshold = 0
-        chance = 0.0
-    elif base_chance >= 255:
-        shake_threshold = 65536
-        chance = 1.0
-    else:
-        shake_threshold = int(1048560 / ((16711680 / base_chance) ** 0.25))
-        chance_per_shake = min(shake_threshold / 65536, 1.0)
-        chance = chance_per_shake ** n_shakes
+    scale = 180 if is_critical_capture else 256
+    chance = min(max(base_chance / scale, 0.0), 1.0)
 
     is_captured = random.random() < chance
 
@@ -407,13 +391,11 @@ def setup_captura(df, is_lucky):
     }
     capture = {
         "is_critical_capture": is_critical_capture,
-        "required_shakes": n_shakes,
         "is_captured": is_captured,
     }
     answers = {
         "base_chance": base_chance,
-        "shake_threshold": shake_threshold,
-        "probability_decimal": chance,
+        "probability_decimal": round(chance, 2),
         "probability_percentage": f'{chance * 100:.2f}%'
     }
 

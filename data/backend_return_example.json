@@ -85,8 +85,8 @@
       "is_lucky": "boolean"
     },
     "request_behavior": {
-      "is_lucky_true": "força uma captura crítica com apenas um movimento da Pokébola",
-      "is_lucky_false": "permite 5% de chance de captura crítica; caso contrário, exige quatro movimentos"
+      "is_lucky_true": "força uma captura crítica, com escalonamento da chance base por 180",
+      "is_lucky_false": "permite 5% de chance de captura crítica; caso contrário, escala a chance base por 256"
     },
     "example_response_body": {
       "encounter": {
@@ -104,19 +104,17 @@
       },
       "capture": {
         "is_critical_capture": "boolean",
-        "required_shakes": "integer",
         "is_captured": "boolean"
       },
       "formula": {
         "name": "string",
         "description": "string com a orientação para o cálculo",
         "equation_tex_base": "string com a fórmula base em LaTeX",
-        "required_shakes": "integer"
+        "scale": "integer (180 para captura crítica ou 256 para captura normal)"
       },
       "answers": {
         "base_chance": "integer",
-        "shake_threshold": "integer",
-        "probability_decimal": "number entre 0 e 1",
+        "probability_decimal": "number entre 0 e 1, arredondado para 2 casas decimais",
         "probability_percentage": "string com a porcentagem e o símbolo %"
       }
     }
