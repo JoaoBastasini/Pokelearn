@@ -179,18 +179,19 @@ h1 {
 }
 
 .botoes_nivel button {
-  /* Níveis dos minijogos */
   margin: 5px;
-  padding: 10px 20px;
-  border: 1px solid black; /* Espessura + Tipo da borda + Cor */
-  border-radius: 8px; /* Arredonda a borda */
+  padding: 5px 10px;
   text-decoration: none;
   text-align: center;
-  padding: 10px 15px; /* Adiciona espaço dentro do botão, Vertical + Lateral */
-  margin: 5px 10px; /* Adiciona espaçõ entre o botão e outras coisas, Vertical + Lateral */
-
-  cursor: pointer; /* Faz com que o cursor mude para o "dá para clicar" */
-  transition: background-color 0.2s ease; /* Faz com que a "hover" aconteça gradualmente */
+  cursor: pointer;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  font-family: "pokemon_simples", sans-serif;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 0 #0000;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 .botoes_nivel .facil {
   background-color: #8aff8a;
@@ -216,14 +217,14 @@ h1 {
   border: none;
   padding: 0;
   cursor: pointer;
-  vertical-align: middle;
-  margin-left: 8px;
+  position: absolute;
+  left: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   font-family: "pokemon_simples";
   font-size: 0.8rem;
   width: 10%;
+  align-items: flex-start;
 }
 .tutorial-btn img {
   width: 100px;
@@ -251,8 +252,131 @@ h1 {
 }
 .minigame-header {
   display: flex;
+  position: relative;
+  justify-content: center;
   align-items: center;
   gap: 16px;
+  width: 100%;
   margin: auto;
   margin-bottom: 2%;
+}
+
+.opcoes_tipos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+/* Esconde o checkbox nativo */
+.opcoes_tipos input[type="checkbox"] {
+  display: none;
+}
+
+/* Badge base */
+.opcoes_tipos label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-family: "pokemon_simples", sans-serif;
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  border: 3px solid transparent;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
+    filter 0.1s ease;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.opcoes_tipos label:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+.opcoes_tipos label:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.opcoes_tipos input[type="checkbox"]:checked + label,
+.opcoes_tipos label:has(input[type="checkbox"]:checked) {
+  border-color: #0000;
+  filter: brightness(1.15);
+  transform: translateY(-2px);
+  box-shadow:
+    0 5px 0 rgba(0, 0, 0, 1),
+    0 0 0 3px rgba(0, 0, 0, 1);
+}
+
+.tipo-normal {
+  background: #9fa19f;
+}
+.tipo-fogo {
+  background: #e62829;
+}
+.tipo-água {
+  background: #2980ef;
+}
+.tipo-grama {
+  background: #3fa129;
+}
+.tipo-elétrico {
+  background: #fac000;
+  color: #3d2f00;
+  text-shadow: none;
+}
+.tipo-gelo {
+  background: #3dcef3;
+  color: #1a4a56;
+  text-shadow: none;
+}
+.tipo-lutador {
+  background: #ff8000;
+}
+.tipo-venenoso {
+  background: #9141cb;
+}
+.tipo-terra {
+  background: #915121;
+}
+.tipo-voador {
+  background: #81b9ef;
+  color: #1a3a5c;
+  text-shadow: none;
+}
+.tipo-psíquico {
+  background: #ef4179;
+}
+.tipo-inseto {
+  background: #91a119;
+}
+.tipo-pedra {
+  background: #b1a119;
+}
+.tipo-fantasma {
+  background: #704170;
+}
+.tipo-dragão {
+  background: #5060e1;
+}
+.tipo-sombrio {
+  background: #49392f;
+}
+.tipo-metal {
+  background: #60a1b8;
+}
+.tipo-fada {
+  background: #ef70ef;
 }

@@ -698,11 +698,13 @@ def setup_logic(df, dificuldade):
     if dificuldade == "facil":
         descricao = (
             "Use as pistas e a tabela completa para descobrir o tipo defensivo."
+            " Obs: tipo Aço = Metal"
         )
     elif dificuldade == "medio":
         descricao = (
             "Um dos tipos já foi revelado. Use as pistas para descobrir o "
             "segundo tipo do Pokémon."
+            " Obs: tipo Aço = Metal"
         )
     else:
         descricao = (

@@ -6,53 +6,73 @@
   rel="stylesheet"
   href="{{ url_for('static', filename='css/geral_style.css') }}"
 />
-<title>Cálculo de XP</title>
+<link rel="stylesheet" href="/static/css/tutorial.css" />
+<script defer src="/static/js/tutorial.js"></script>
+<link rel="stylesheet" href="/static/css/tabela_tipos_style.css" />
+<script defer src="/static/js/tabela_tipos.js"></script>
+<title>Qual é o Tipo?</title>
 
 {% endblock %}{% block title %}Qual é o Tipo?{% endblock %} {% block content %}
-<svg class="svg_centralizado" width="450" height="150" viewBox="0 0 500 200">
-  <defs>
-    <path id="img_curvada" d="M 10,180 Q 250,20 490,180" />
-  </defs>
-  <text class="img_titulo">
-    <textPath
-      href="#img_curvada"
-      startOffset="50%"
-      textLength="480"
-      lengthAdjust="spacingAndGlyphs"
-    >
-      Qual é o Tipo?
-    </textPath>
-  </text>
-</svg>
+<div class="titulo">Qual é o tipo</div>
 
 <div class="container">
-  <h3 style="text-align: center">Selecione o Nível de Dificuldade:</h3>
-  <div class="botoes_nivel">
-    <button class="facil" type="button" onclick="startChallenge('facil')">
-      FÁCIL
+  <div class="minigame-header">
+    <button
+      data-tutorial-open
+      data-tutorial-images='[
+        "/static/tutorial/Tutorial-Calculadora.png",
+        "/static/tutorial/Tutorial-XP-1.png",
+        "/static/tutorial/Tutorial-XP-2.png",
+        "/static/tutorial/Tutorial-XP-3.png"
+      ]'
+      class="tutorial-btn"
+      title="Ajuda"
+    >
+      <img src="{{ url_for('static', filename='imagens/help.png') }}" />
     </button>
-    <button class="medio" type="button" onclick="startChallenge('medio')">
-      MÉDIO
-    </button>
-    <button class="dificil" type="button" onclick="startChallenge('dificil')">
-      DIFÍCIL
-    </button>
+
+    <div>
+      <h3 style="text-align: center; margin: 0 0 12px">
+        Selecione o Nível de Dificuldade:
+      </h3>
+      <div class="botoes_nivel">
+        <button class="facil" onclick="startChallenge('facil')">FÁCIL</button>
+        <button class="medio" onclick="startChallenge('medio')">MÉDIO</button>
+        <button class="dificil" onclick="startChallenge('dificil')">
+          DIFÍCIL
+        </button>
+      </div>
+    </div>
   </div>
 
   <div id="challenge_area" style="display: none">
     <h2>Desafio de Lógica — <span id="level_name"></span></h2>
 
     <div class="info_box">
-      <p><strong>Pokémon:</strong> <span id="pokemon_name"></span></p>
-      <img id="pokemon_img" class="pokemon_img" alt="" />
-      <p id="puzzle_description"></p>
-      <p id="known_types_line" style="display: none">
-        <strong>Tipo já conhecido:</strong> <span id="known_types"></span>
-      </p>
+      <div style="justify-items: center">
+        <p><strong>🧬 Pokémon:</strong> <span id="pokemon_name"></span></p>
+        <img
+          id="pokemon_img"
+          class="pokemon_img"
+          style="display: block; margin-left: auto; margin-right: auto"
+        />
+        <p id="puzzle_description"></p>
+        <p id="known_types_line" style="display: none">
+          <strong>Tipo já conhecido:</strong> <span id="known_types"></span>
+        </p>
+        <button
+          data-lightbox-src="/static/imagens/tipos.png"
+          data-lightbox-alt="Tabela de tipos"
+          class="lightbox-btn"
+          title="Ver tabela de tipos"
+        >
+          Tabela de Tipos
+        </button>
+      </div>
     </div>
 
     <div class="info_box">
-      <h3>Pistas</h3>
+      <h3>🔎 Pistas</h3>
       <ul id="clues"></ul>
     </div>
 
@@ -104,9 +124,12 @@
       requiredSelections = data.puzzle.required_selections;
 
       document.getElementById("level_name").textContent = level.toUpperCase();
-      document.getElementById("pokemon_name").textContent = data.pokemon.name;
+      document.getElementById("pokemon_name").dataset.realName =
+        data.pokemon.name;
+      document.getElementById("pokemon_name").textContent = "???";
       document.getElementById("pokemon_img").src = data.pokemon.image_url;
       document.getElementById("pokemon_img").alt = data.pokemon.name;
+      document.getElementById("pokemon_img").style.filter = "brightness(0)";
       document.getElementById("puzzle_description").textContent =
         data.puzzle.description_text;
       document.getElementById("required_selections").textContent =
@@ -127,10 +150,14 @@
       document.getElementById("type_options").innerHTML =
         data.puzzle.candidate_types
           .filter((type) => !knownTypes.includes(type))
-          .map(
-            (type) =>
-              `<label><input type="checkbox" name="pokemon_type" value="${type}" /> ${type}</label>`,
-          )
+          .map((type) => {
+            const classe = "tipo-" + type.toLowerCase();
+            return `
+        <label class="${classe}">
+          <input type="checkbox" name="pokemon_type" value="${type}" />
+          ${type}
+        </label>`;
+          })
           .join("");
 
       document
@@ -164,6 +191,9 @@
 
     resultMessage.style.display = "block";
     document.getElementById("new_challenge_btn").style.display = "inline-block";
+    const nameEl = document.getElementById("pokemon_name");
+    nameEl.textContent = nameEl.dataset.realName;
+    document.getElementById("pokemon_img").style.filter = "brightness(1)";
     resultMessage.className = `resultado_box ${isCorrect ? "correto" : "incorreto"}`;
     resultMessage.innerHTML = isCorrect
       ? `Correto! O tipo é <strong>${expectedTypes.join(" / ")}</strong>.`
