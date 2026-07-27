@@ -78,10 +78,6 @@
             ></span
             >)
           </p>
-          <p>
-            <strong>🤞 Movimentos necessários:</strong>
-            <span id="required_shakes"></span>
-          </p>
         </div>
       </div>
     </div>
@@ -90,7 +86,7 @@
       <h3 id="formula_name"></h3>
       <p id="formula_description"></p>
       <div id="formula_base"></div>
-      <div id="formula_probability"></div>
+      <div id="formula_scale"></div>
     </div>
 
     <div class="grupo_entrada">
@@ -156,8 +152,6 @@
         data.encounter.status_modifier;
       document.getElementById("ball_name").textContent = data.ball.name;
       document.getElementById("ball_modifier").textContent = data.ball.modifier;
-      document.getElementById("required_shakes").textContent =
-        data.capture.required_shakes;
       document.getElementById("formula_name").textContent = data.formula.name;
       document.getElementById("formula_description").textContent =
         data.formula.description;
@@ -165,6 +159,11 @@
       katex.render(
         data.formula.equation_tex_base,
         document.getElementById("formula_base"),
+        { throwOnError: false },
+      );
+      katex.render(
+        data.formula.equation_tex_scale,
+        document.getElementById("formula_scale"),
         { throwOnError: false },
       );
     } catch (error) {

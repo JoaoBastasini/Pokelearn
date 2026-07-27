@@ -109,12 +109,13 @@
       "formula": {
         "name": "string",
         "description": "string com a orientação para o cálculo",
-        "equation_tex_base": "string com a fórmula base em LaTeX",
+        "equation_tex_base": "string com a fórmula simplificada a, antes do escalonamento, em LaTeX",
+        "equation_tex_scale": "string com a fórmula de escalonamento e conversão para porcentagem, em LaTeX",
         "scale": "integer (180 para captura crítica ou 256 para captura normal)"
       },
       "answers": {
         "base_chance": "integer",
-        "probability_decimal": "number entre 0 e 1, arredondado para 2 casas decimais",
+        "probability_decimal": "number entre 0 e 1, arredondado para 4 casas decimais",
         "probability_percentage": "string com a porcentagem e o símbolo %"
       }
     }

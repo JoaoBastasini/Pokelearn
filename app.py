@@ -317,9 +317,17 @@ def get_captura_formula(is_critical_capture):
 
     return {
         "name": "Probabilidade de Captura",
-        "description": "Escale a chance base e limite o resultado a 100%.",
+        "description": (
+            f"Calcule a e depois divida o resultado por {scale}. "
+            "Limite a chance a 1 e converta-a em porcentagem."
+        ),
         "equation_tex_base": (
-            rf"P(\text{{captura}}) = \min\left(\frac{{\text{{Chance Base}}}}{{{scale}}}, 1\right)"
+            r"a = \left\lfloor\frac{(3 \times \text{HP Máx.} - 2 \times \text{HP Atual}) "
+            r"\times \text{Taxa} \times \text{Mod. da Bola}}"
+            r"{3 \times \text{HP Máx.}} \times \text{Mod. de Status}\right\rfloor"
+        ),
+        "equation_tex_scale": (
+            rf"P(\text{{captura}}) = \min\left(\frac{{a}}{{{scale}}}, 1\right) \times 100\%"
         ),
         "scale": scale
     }
@@ -395,7 +403,8 @@ def setup_captura(df, is_lucky):
     }
     answers = {
         "base_chance": base_chance,
-        "probability_decimal": round(chance, 2),
+        # Quatro casas no decimal para que fique com duas casas na porcentagem
+        "probability_decimal": round(chance, 4),
         "probability_percentage": f'{chance * 100:.2f}%'
     }
 
