@@ -322,7 +322,7 @@ def get_captura_formula(is_critical_capture):
             "Limite a chance a 1 e converta-a em porcentagem."
         ),
         "equation_tex_base": (
-            r"a = \left\lfloor\frac{(3 \times \text{HP Máx.} - 2 \times \text{HP Atual}) "
+            r"a = \left\lfloor\frac{(3 \times \text{HP Máx.} \times (- 2 \times \text{HP Atual})) "
             r"\times \text{Taxa} \times \text{Mod. da Bola}}"
             r"{3 \times \text{HP Máx.}} \times \text{Mod. de Status}\right\rfloor"
         ),
@@ -377,7 +377,7 @@ def setup_captura(df, is_lucky):
     hp_current = max(1, hp_percentage * hp_max // 100)
 
     # Calcula o valor de captura base e faz o escalonamento da chance final
-    base_chance = int((((3 * hp_max - 2 * hp_current) * catch_rate * ball_modifier) / (3 * hp_max)) * status_modifier)
+    base_chance = int((((3 * hp_max -( 2 * hp_current)) * catch_rate * ball_modifier) / (3 * hp_max)) * status_modifier)
     scale = 180 if is_critical_capture else 256
     chance = min(max(base_chance / scale, 0.0), 1.0)
 
