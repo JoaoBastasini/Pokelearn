@@ -21,9 +21,10 @@
       data-tutorial-open
       data-tutorial-images='[
         "/static/tutorial/Tutorial-Calculadora.png",
-        "/static/tutorial/Tutorial-XP-1.png",
-        "/static/tutorial/Tutorial-XP-2.png",
-        "/static/tutorial/Tutorial-XP-3.png"
+        "/static/tutorial/Tutorial-Logica-1.png",
+        "/static/tutorial/Tutorial-Logica-2.png",
+        "/static/tutorial/Tutorial-Logica-3.png",
+        "/static/tutorial/Tutorial-Logica-4.png"
       ]'
       class="tutorial-btn"
       title="Ajuda"
@@ -64,6 +65,7 @@
           data-lightbox-src="/static/imagens/tipos.png"
           data-lightbox-alt="Tabela de tipos"
           class="lightbox-btn"
+          id="tabela_tipos"
           title="Ver tabela de tipos"
         >
           Tabela de Tipos
@@ -134,6 +136,9 @@
         data.puzzle.description_text;
       document.getElementById("required_selections").textContent =
         requiredSelections;
+      if (level === "dificil")
+        document.getElementById("tabela_tipos").style.visibility = "hidden";
+      else document.getElementById("tabela_tipos").style.visibility = "visible";
 
       const knownTypesLine = document.getElementById("known_types_line");
       knownTypesLine.style.display = knownTypes.length ? "block" : "none";
