@@ -152,8 +152,6 @@ Também não há telemetria nem armazenamento de dados pessoais. Cada desafio ex
 - **Caio:** frontend, identidade visual, responsividade, tutoriais e recursos gráficos;
 - **Trabalho conjunto:** definição dos contratos, integração, refatoração e testes manuais.
 
-O detalhamento das entregas e da carga horária está em [Descrição das atividades desenvolvidas](DESCRICAO_ATIVIDADES_DESENVOLVIDAS.md).
-
 ## Licença e uso de terceiros
 
 Este repositório não declara atualmente uma licença de software. Na ausência de um arquivo `LICENSE`, permanecem reservados os direitos sobre o código produzido pelos autores.
