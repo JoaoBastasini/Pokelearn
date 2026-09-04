@@ -17,8 +17,6 @@
 ></script>
 <link rel="stylesheet" href="/static/css/tutorial.css" />
 <script defer src="/static/js/tutorial.js"></script>
-<title>Chance de Captura</title>
-
 {% endblock %} {% block content %}
 <div class="titulo">Chance de Captura</div>
 <div class="container">
@@ -36,13 +34,19 @@
     >
       <img src="{{ url_for('static', filename='imagens/help.png') }}" />
     </button>
-    <div class="botoes_nivel">
-      <button class="medio" type="button" onclick="startChallenge(false)">
-        NOVO DESAFIO
-      </button>
-      <button class="facil" type="button" onclick="startChallenge(true)">
-        CAPTURA CRÍTICA
-      </button>
+
+    <div>
+      <h3 style="text-align: center; margin: 0 0 12px">
+        Selecione o Tipo de Desafio:
+      </h3>
+      <div class="botoes_nivel">
+        <button class="medio" type="button" onclick="startChallenge(false)">
+          NOVO DESAFIO
+        </button>
+        <button class="facil" type="button" onclick="startChallenge(true)">
+          CAPTURA CRÍTICA
+        </button>
+      </div>
     </div>
   </div>
 
@@ -51,32 +55,27 @@
     <br />
     <div class="info_box">
       <div class="grade_stats">
-        <div>
+        <div style="text-align: center">
           <img id="pokemon_img" class="pokemon_img" alt="" />
         </div>
-        <div style="margin: auto">
+        <div class="captura-stats">
           <p><strong>🧬 Pokémon:</strong> <span id="pokemon_name"></span></p>
-          <br />
           <p>
-            <strong>❤️‍🩹 HP:</strong> <span id="hp_current"></span>/<span
-              id="hp_max"
-            ></span>
+            <strong>❤️‍🩹 HP:</strong>
+            <span id="hp_current"></span>/<span id="hp_max"></span>
           </p>
           <p>
             <strong>📈 Taxa de captura:</strong> <span id="catch_rate"></span>
           </p>
           <p>
             <strong>📉 Status:</strong>
-            <span id="status_condition"></span> (x<span
-              id="status_modifier"
-            ></span
-            >)
+            <span id="status_condition"></span>
+            (x<span id="status_modifier"></span>)
           </p>
           <p>
-            <strong>🔴 Pokébola:</strong> <span id="ball_name"></span> (x<span
-              id="ball_modifier"
-            ></span
-            >)
+            <strong>🔴 Pokébola:</strong>
+            <span id="ball_name"></span>
+            (x<span id="ball_modifier"></span>)
           </p>
         </div>
       </div>
@@ -94,10 +93,12 @@
       <input
         id="user_answer"
         type="number"
+        inputmode="decimal"
         min="0"
         max="100"
         step="0.01"
         placeholder="Ex: 35,50"
+        style="margin-top: 20px"
       />
       <button class="botao_minijogo" type="button" onclick="checkAnswer()">
         Confirmar
@@ -108,6 +109,22 @@
   </div>
 </div>
 {% endblock %} {% block extra_js %}
+<style>
+  .captura-stats {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+  .captura-stats p {
+    margin: 0;
+  }
+  @media (max-width: 560px) {
+    .captura-stats {
+      margin-top: 12px;
+    }
+  }
+</style>
 <script>
   let correctPercentage = null;
 

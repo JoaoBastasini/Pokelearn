@@ -9,23 +9,32 @@
 }
 
 html {
-  height: 100%; /* Aplica as coisas na página visível toda, não apenas até onde tem coisa escrita */
+  height: 100%;
 }
 
 body {
   font-family: "pokemon_simples";
   background-image: url("/static/imagens/landscape.jpg");
-  background-attachment: fixed; /* Mantém o gradiente fixo na viewport e garante que cubra toda a altura */
-  background-size: cover; /* Garante que o gradiente cubra toda a área visível */
-  min-width: 100%; /* Aplica as coisas na página visível toda, não apenas até onde tem coisa escrita */
-  min-height: 100vh; /* Aplica as coisas na página visível toda, não apenas até onde tem coisa escrita */
-  margin: 0; /* Remove a margem padrão do body */
+  background-attachment: fixed;
+  background-size: cover;
+  min-width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+}
+
+/* background-attachment: fixed causa travamentos/bugs de scroll em
+   navegadores mobile (principalmente Safari iOS) */
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
 }
 
 h1 {
   font-family: "pokemon_titulo", sans-serif;
   color: rgb(249, 231, 29);
-  font-size: 80px;
+  font-size: clamp(2.5rem, 8vw, 80px);
   text-align: center;
   text-shadow:
     4px 4px 2px #000,
@@ -44,27 +53,25 @@ h1 {
   display: block;
   margin-left: auto;
   margin-right: auto;
+  max-width: 100%;
+  height: auto;
 }
 
 #img_curvada {
-  stroke: transparent; /* Sem borda */
+  stroke: transparent;
   fill: none;
 }
 
 .img_titulo {
-  /* Características de Fonte */
   font-family: "pokemon_titulo", sans-serif;
-  font-size: 80px;
-  letter-spacing: 15px;
-
+  font-size: clamp(2rem, 7vw, 80px);
+  letter-spacing: clamp(4px, 2vw, 15px);
   fill: rgb(249, 231, 29);
-
   text-shadow:
     4px 4px 2px #000,
     -4px -4px 2px #000,
     4px -4px 2px #000,
     -4px 4px 2px #000;
-
   text-anchor: middle;
 }
 
@@ -72,40 +79,49 @@ h1 {
   display: inline-block;
   background-color: #ffff1a;
   color: #6b4e06;
-  border: 1px solid black; /* Espessura + Tipo da borda + Cor */
-  border-radius: 8px; /* Arredonda a borda */
+  border: 1px solid black;
+  border-radius: 8px;
   text-decoration: none;
   text-align: center;
-  padding: 10px 15px; /* Adiciona espaço dentro do botão, Vertical + Lateral */
-  margin: 5px 10px; /* Adiciona espaçõ entre o botão e outras coisas, Vertical + Lateral */
-
-  cursor: pointer; /* Faz com que o cursor mude para o "dá para clicar" */
-  transition: background-color 0.2s ease; /* Faz com que a "hover" aconteça gradualmente */
+  padding: 10px 15px;
+  margin: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
   box-shadow:
     4px 4px 2px #000,
     -1px -1px 1px #000,
     1px -1px 1px #000,
     -2px 4px 2px #000;
 }
-
 .botao_minijogo:hover {
   background-color: #ffffff;
   color: #6b4d00;
 }
 
 .container {
-  /* Container para todo o minijogo */
   max-width: 800px;
+  width: 100%;
   margin: 20px auto;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   padding: 20px;
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Itens de grid têm min-width: auto por padrão, o que impede que
+   encolham abaixo do tamanho do próprio conteúdo (ex: a fórmula do
+   KaTeX). Isso força o .container inteiro a esticar horizontalmente
+   e "quebra" a janela do minigame. Zerando aqui, o overflow-x: auto
+   da .formula_LaTex volta a funcionar como esperado. */
+.container > * {
+  min-width: 0;
 }
 
 .info_box {
-  /* Caixa que exibe informações */
   border: 2px solid #3b4cca;
   padding: 15px;
   margin-bottom: 20px;
@@ -114,35 +130,49 @@ h1 {
 }
 
 .grade_stats {
-  /* Grade para stats */
-  display: grid; /* modelo de layout de grade (grid) */
-  grid-template-columns: 1fr 1fr; /* Divide o espaço da grade em duas colunas de tamanho igual (1 fração cada) */
-  gap: 10px; /* Espaço entre os itens da grade */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.grade_stats > * {
+  min-width: 0;
 }
 
 .item_stats {
-  /* Cada item dentro da grade de stats */
   padding: 8px;
   background-color: #cce7ff;
   border-radius: 5px;
 }
 
 .formula_LaTex {
-  /* Mostra a fórmula */
-  font-size: 1.1em; /* Aumenta a tamanho da fonte */
+  font-size: 1.1em;
   text-align: center;
   margin-top: 15px;
   margin-bottom: 15px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Corrigido: os IDs reais gerados no template são formula_base e
+   formula_scale (não existe #formula_equation no HTML) */
+#formula_base,
+#formula_scale {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .grupo_entrada {
-  /* Container de entrada de dados */
   text-align: center;
   margin-top: 20px;
 }
 
 .grupo_entrada input {
-  /* Campo de entrada (input) */
   padding: 10px;
   font-size: 1.1em;
   width: 150px;
@@ -152,7 +182,6 @@ h1 {
 }
 
 .resultado_box {
-  /* Caixa que exibe a resposta */
   margin-top: 20px;
   padding: 15px;
   border-radius: 8px;
@@ -161,19 +190,16 @@ h1 {
 }
 
 .correto {
-  /* Verde se certa resposta */
   background-color: #d4edda;
   color: #155724;
 }
 
 .incorreto {
-  /* Vermelho se errou */
   background-color: #f8d7da;
   color: #721c24;
 }
 
 .botoes_nivel {
-  /* Container dos botões de nível */
   text-align: center;
   margin-bottom: 20px;
 }
@@ -203,15 +229,22 @@ h1 {
   background-color: #ff8a8a;
 }
 .botoes_nivel button:hover {
-  opacity: 0.8; /* Efeito de hover */
+  opacity: 0.8;
 }
+
 .menu_principal {
   text-align: center;
   margin-top: 3rem;
 }
+
 .pokemon_img {
-  width: 350px;
+  width: 100%;
+  max-width: 350px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
+
 .tutorial-btn {
   background: none;
   border: none;
@@ -223,13 +256,14 @@ h1 {
   flex-direction: column;
   font-family: "pokemon_simples";
   font-size: 0.8rem;
-  width: 10%;
+  width: auto;
   align-items: flex-start;
 }
 .tutorial-btn img {
-  width: 100px;
+  width: 60px;
   height: auto;
 }
+
 .titulo {
   font-size: 5rem;
   font-weight: 100;
@@ -250,6 +284,7 @@ h1 {
   text-align: center;
   justify-content: center;
 }
+
 .minigame-header {
   display: flex;
   position: relative;
@@ -269,12 +304,10 @@ h1 {
   margin: 16px 0;
 }
 
-/* Esconde o checkbox nativo */
 .opcoes_tipos input[type="checkbox"] {
   display: none;
 }
 
-/* Badge base */
 .opcoes_tipos label {
   display: inline-flex;
   align-items: center;
@@ -298,19 +331,15 @@ h1 {
     filter 0.1s ease;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 }
-
 .opcoes_tipos label:hover {
   filter: brightness(1.1);
   transform: translateY(-2px);
   box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2);
 }
-
 .opcoes_tipos label:active {
   transform: translateY(1px);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
 }
-
-.opcoes_tipos input[type="checkbox"]:checked + label,
 .opcoes_tipos label:has(input[type="checkbox"]:checked) {
   border-color: #0000;
   filter: brightness(1.15);
@@ -379,4 +408,123 @@ h1 {
 }
 .tipo-fada {
   background: #ef70ef;
+}
+
+/* ── RESPONSIVIDADE ─────────────────────────── */
+
+@media (max-width: 860px) {
+  .container {
+    margin: 12px;
+    width: auto;
+  }
+
+  .grade_stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .titulo {
+    font-size: 3rem;
+    letter-spacing: 2px;
+  }
+
+  .minigame-header {
+    flex-direction: column;
+    align-items: center;
+    padding-top: 60px;
+  }
+
+  .tutorial-btn {
+    left: 12px;
+    top: 8px;
+  }
+  .tutorial-btn img {
+    width: 44px;
+  }
+}
+
+@media (max-width: 560px) {
+  .titulo {
+    font-size: 2rem;
+    letter-spacing: 1px;
+  }
+
+  .botoes_nivel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .botoes_nivel button {
+    width: 100%;
+    max-width: 260px;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    margin: 0;
+  }
+
+  .botao_minijogo {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+
+  .info_box {
+    padding: 10px;
+  }
+
+  .grupo_entrada input {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .opcoes_tipos label {
+    min-width: 70px;
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+
+  .formula_LaTex {
+    font-size: 0.9em;
+  }
+}
+
+/* Telas bem pequenas (ex: iPhone SE, 375px e menores) */
+@media (max-width: 380px) {
+  .titulo {
+    font-size: 1.6rem;
+  }
+
+  .pokemon_img {
+    max-width: 220px;
+  }
+
+  .grupo_entrada input {
+    max-width: 160px;
+  }
+
+  .captura-stats p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Telas de altura reduzida (ex: celular em landscape) */
+@media (max-height: 480px) and (orientation: landscape) {
+  .titulo {
+    font-size: 1.8rem;
+    margin: 4px auto;
+  }
+
+  .container {
+    margin: 8px auto;
+    padding: 12px;
+  }
+
+  .minigame-header {
+    padding-top: 0;
+  }
+
+  .tutorial-btn {
+    position: static;
+    margin-bottom: 8px;
+  }
 }

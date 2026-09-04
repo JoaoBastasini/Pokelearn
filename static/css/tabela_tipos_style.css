@@ -18,7 +18,7 @@
 
 #lightbox-modal {
   position: relative;
-  max-width: min(90vw, 960px);
+  width: min(90vw, 960px);
   max-height: 90vh;
   transform: scale(0.95);
   transition: transform 0.2s ease;
@@ -29,7 +29,8 @@
 
 #lightbox-img {
   display: block;
-  max-width: 100%;
+  width: 100%;
+  height: auto;
   max-height: 90vh;
   border-radius: 12px;
   box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.8);
@@ -62,13 +63,6 @@
 }
 #lightbox-close:active {
   transform: scale(0.95);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #lightbox-overlay,
-  #lightbox-modal {
-    transition: none;
-  }
 }
 
 .tabela_tipos {
@@ -106,4 +100,29 @@
 .lightbox-btn img {
   width: 36px;
   height: auto;
+}
+
+@media (max-width: 600px) {
+  #lightbox-modal {
+    width: calc(100vw - 24px);
+  }
+
+  #lightbox-img {
+    border-radius: 8px;
+    max-height: 80vh;
+  }
+
+  /* Botão de fechar fica dentro da imagem em telas pequenas
+     para não sair da área visível */
+  #lightbox-close {
+    top: 8px;
+    right: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #lightbox-overlay,
+  #lightbox-modal {
+    transition: none;
+  }
 }

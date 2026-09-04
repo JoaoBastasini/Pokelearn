@@ -36,7 +36,7 @@
   bottom: 92px;
   right: 24px;
   width: 700px;
-  max-width: calc(100vw - 32px);
+  max-width: calc(100vw - 48px);
   border-radius: 22px;
   overflow: hidden;
   box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.55);
@@ -60,18 +60,39 @@
   border: none;
 }
 
-@media (max-width: 1000px) {
+/* Tablet */
+@media (max-width: 780px) {
   #calc-widget-panel {
-    right: 16px;
-    left: 16px;
-    width: auto;
+    width: calc(100vw - 48px);
+    right: 24px;
+    left: 24px;
     bottom: 88px;
   }
+  #calc-widget-panel iframe {
+    height: 460px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
   #calc-widget-btn {
     right: 16px;
     bottom: 16px;
+    width: 48px;
+    height: 48px;
+  }
+  #calc-widget-panel {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    bottom: 76px;
+    border-radius: 16px;
+  }
+  #calc-widget-panel iframe {
+    height: 420px;
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   #calc-widget-btn,
   #calc-widget-panel {

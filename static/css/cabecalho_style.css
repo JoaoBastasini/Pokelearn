@@ -1,6 +1,5 @@
 /* ===========================
    cabecalho.css
-   Estilos exclusivos do header
    =========================== */
 
 @font-face {
@@ -34,9 +33,9 @@
   color: rgb(249, 231, 29);
   text-decoration: none;
   letter-spacing: 3px;
-  line-height: 1; /* remove espaço extra da linha */
+  line-height: 1;
   display: flex;
-  align-items: center; /* alinha internamente ao container */
+  align-items: center;
   transform: translateY(-10px);
   text-shadow:
     2px 2px 1px #000,
@@ -44,7 +43,6 @@
     2px -2px 1px #000,
     -2px 2px 1px #000;
 }
-
 .cabecalho__logo a:hover {
   color: #ffffff;
 }
@@ -76,7 +74,6 @@
     background 0.3s,
     color 0.3s;
 }
-
 .cabecalho__dropdown-btn:hover,
 .cabecalho__dropdown-btn.aberto {
   background: #0b1c27;
@@ -88,7 +85,6 @@
   transition: transform 0.2s;
   display: inline-block;
 }
-
 .cabecalho__dropdown-btn.aberto .cabecalho__arrow {
   transform: rotate(180deg);
 }
@@ -105,7 +101,6 @@
   padding: 4px;
   z-index: 999;
 }
-
 .cabecalho__dropdown-menu.aberto {
   display: block;
 }
@@ -121,7 +116,6 @@
     background 0.15s,
     color 0.15s;
 }
-
 .cabecalho__dropdown-item:hover {
   background: rgba(249, 231, 29, 0.15);
   color: rgb(249, 231, 29);
@@ -131,4 +125,99 @@
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   margin: 4px 0;
+}
+
+/* Botão hamburguer (só aparece no mobile) */
+.cabecalho__hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: auto;
+}
+.cabecalho__hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+.cabecalho__hamburger.aberto span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.cabecalho__hamburger.aberto span:nth-child(2) {
+  opacity: 0;
+}
+.cabecalho__hamburger.aberto span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── RESPONSIVIDADE ─────────────────────────── */
+
+@media (max-width: 640px) {
+  .cabecalho__slogan {
+    display: none;
+  }
+
+  .cabecalho {
+    padding: 0 1rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 60px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .cabecalho__logo a {
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+  }
+
+  .cabecalho__hamburger {
+    display: flex;
+  }
+
+  /* Nav vira menu vertical dropdown */
+  .cabecalho__nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+    margin-left: 0;
+    background: #0e202c;
+    border-radius: 8px;
+    padding: 8px 4px;
+    margin-bottom: 8px;
+  }
+  .cabecalho__nav.aberto {
+    display: flex;
+  }
+
+  .cabecalho__dropdown {
+    width: 100%;
+  }
+
+  .cabecalho__dropdown-btn {
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 14px;
+  }
+
+  .cabecalho__dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border: none;
+    border-left: 2px solid rgba(249, 231, 29, 0.3);
+    border-radius: 0;
+    margin-left: 12px;
+    padding: 0;
+  }
 }
