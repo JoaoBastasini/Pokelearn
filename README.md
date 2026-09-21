@@ -2,7 +2,7 @@
 
 Aplicação web educacional que usa batalhas, evolução e captura de Pokémon para transformar conteúdos de matemática em desafios interativos.
 
-O projeto foi desenvolvido na disciplina **Projetos em Computação II**, da UNESP, como evolução de um protótipo anterior. O resultado é uma aplicação Flask com cinco minijogos, três níveis de dificuldade, geração procedural de exercícios, fórmulas renderizadas em notação matemática e recursos de apoio como tutoriais, tabela de tipos e calculadora.
+O projeto foi desenvolvido na disciplina **Projetos em Computação II**, da UNESP, como evolução de um protótipo anterior. O resultado é uma aplicação Flask com cinco minijogos, três níveis de dificuldade, geração procedural de exercícios, fórmulas renderizadas em notação matemática e recursos de apoio como tutoriais, tabela de tipos.
 
 > Este é um projeto acadêmico e não oficial. Pokémon e seus elementos visuais pertencem aos respectivos detentores de direitos. O projeto não possui finalidade comercial.
 
@@ -16,13 +16,13 @@ O frontend apresenta o problema, oferece ferramentas para resolvê-lo e faz a co
 
 ### O que foi implementado
 
-| Minijogo | Conteúdo trabalhado | Como a dificuldade evolui |
-| --- | --- | --- |
-| **Cálculo de dano** | Ordem de operações, proporções, multiplicadores e intervalos | Parte de uma fórmula simplificada, passa pelo dano exato e chega à faixa com fator aleatório |
-| **Cálculo de experiência** | Funções cúbicas, funções definidas por partes e diferença entre valores | Seleciona grupos de crescimento com fórmulas progressivamente mais complexas |
-| **Chance de captura** | Razão, porcentagem, limitadores e modificadores | Combina HP, taxa de captura, Pokébola, condição de estado e captura crítica |
-| **Probabilidade de eventos** | Complemento, eventos independentes, distribuição binomial e somatórios | Avança de erro/acerto simples para “pelo menos”, “no máximo” e intervalos de acertos |
-| **Lógica dedutiva** | Interseção de restrições e eliminação de hipóteses | Evolui de um tipo com tabela disponível para uma combinação de dois tipos deduzida pelas pistas |
+| Minijogo                     | Conteúdo trabalhado                                                     | Como a dificuldade evolui                                                                       |
+| ---------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Cálculo de dano**          | Ordem de operações, proporções, multiplicadores e intervalos            | Parte de uma fórmula simplificada, passa pelo dano exato e chega à faixa com fator aleatório    |
+| **Cálculo de experiência**   | Funções cúbicas, funções definidas por partes e diferença entre valores | Seleciona grupos de crescimento com fórmulas progressivamente mais complexas                    |
+| **Chance de captura**        | Razão, porcentagem, limitadores e modificadores                         | Combina HP, taxa de captura, Pokébola, condição de estado e captura crítica                     |
+| **Probabilidade de eventos** | Complemento, eventos independentes, distribuição binomial e somatórios  | Avança de erro/acerto simples para “pelo menos”, “no máximo” e intervalos de acertos            |
+| **Lógica dedutiva**          | Interseção de restrições e eliminação de hipóteses                      | Evolui de um tipo com tabela disponível para uma combinação de dois tipos deduzida pelas pistas |
 
 Todos os desafios são gerados no momento da requisição. Pokémon, golpes, níveis, condições e cenários podem variar entre rodadas.
 
@@ -32,7 +32,7 @@ Todos os desafios são gerados no momento da requisição. Pokémon, golpes, ní
 Navegador
   ├── templates Jinja + HTML/CSS/JavaScript
   ├── KaTeX para fórmulas
-  └── tutoriais, calculadora e tabela de tipos
+  └── tutoriais e tabela de tipos
               │ POST /api/...
               ▼
 Aplicação Flask (app.py)
@@ -68,7 +68,7 @@ Mais detalhes estão na [documentação da arquitetura](docs/ARQUITETURA.md).
 
 - Python 3.10 ou superior;
 - `pip`;
-- conexão com a internet para carregar o KaTeX, as fontes da calculadora e algumas imagens referenciadas pelos dados.
+- conexão com a internet para carregar o KaTeX, as fontes da pokedex e algumas imagens referenciadas pelos dados.
 
 ### Instalação
 
@@ -118,7 +118,7 @@ Pokelearn/
 │   └── minijogos/                 # Uma interface para cada atividade
 ├── static/
 │   ├── css/                       # Estilos globais e componentes
-│   ├── js/                        # Calculadora, tutorial e tabela de tipos
+│   ├── js/                        # Pokedex, tutorial e tabela de tipos
 │   ├── imagens/                   # Identidade e recursos visuais
 │   └── tutorial/                  # Imagens finais e arquivos-fonte das instruções
 └── docs/                          # Arquitetura, API e pipeline de dados

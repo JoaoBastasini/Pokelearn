@@ -4,26 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tutorial e Anotações</title>
-    <link rel="stylesheet" href="/static/css/calculadora_style.css" />
+    <link rel="stylesheet" href="/static/css/pokedex_style.css" />
   </head>
   <body>
     <div class="pokedex">
       <!-- Lado esquerdo: Tutorial -->
       <div class="tutorial-panel">
         <div class="carousel-display" id="tutorial-display">
-          <div class="panel-title-row">
-            <h2>TUTORIAL</h2>
-            <button
-              class="fullscreen-btn"
-              type="button"
-              id="fullscreen-btn"
-              aria-label="Abrir tutorial em tela cheia"
-            >
-              ⛶
-            </button>
-          </div>
+          <button
+            class="fullscreen-btn"
+            type="button"
+            id="fullscreen-btn"
+            aria-label="Abrir tutorial em tela cheia"
+          >
+            ⛶
+          </button>
 
           <div class="carousel">
+            <div class="carousel-track">
+              <img id="carousel-image" src="" alt="" />
+            </div>
+          </div>
+
+          <div class="carousel-footer">
             <button
               class="carousel-btn prev"
               type="button"
@@ -31,9 +34,8 @@
             >
               ‹
             </button>
-            <div class="carousel-track">
-              <img id="carousel-image" src="" alt="" />
-            </div>
+            <div class="carousel-dots" id="carousel-dots"></div>
+            <span class="carousel-counter" id="carousel-counter"></span>
             <button
               class="carousel-btn next"
               type="button"
@@ -41,11 +43,6 @@
             >
               ›
             </button>
-          </div>
-
-          <div class="carousel-footer">
-            <div class="carousel-dots" id="carousel-dots"></div>
-            <span class="carousel-counter" id="carousel-counter"></span>
           </div>
         </div>
       </div>
@@ -80,14 +77,38 @@
         });
       })();
 
-      // Carrossel de imagens do tutorial de matemática
-      // Substitua pelos caminhos reais das imagens do tutorial
+      // Carrossel de imagens do tutorial
+      // As imagens vêm da página que está chamando a pokedex, de duas formas:
+      // 1) query string do iframe: .../calculadora.html?images=["...","..."]
+      //    (é isso que o calculadora-widget.js monta a partir do
+      //    data-tutorial-images da tag <script>)
+      // 2) postMessage, disparado a qualquer momento após o iframe carregar:
+      //      iframe.contentWindow.postMessage(
+      //        { type: "pokedex:set-tutorial-images", images: [...] }, "*")
+      // Se nenhuma das duas for usada, cai no array padrão abaixo.
       (function () {
-        const tutorialImages = [
-          "/static/tutorial/Tutorial-Matematica-1.png",
-          "/static/tutorial/Tutorial-Matematica-2.png",
-          "/static/tutorial/Tutorial-Matematica-3.png",
-        ];
+        function getInitialImages() {
+          try {
+            const params = new URLSearchParams(window.location.search);
+            const raw = params.get("images");
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+          } catch (err) {
+            console.warn(
+              "tutorial: parâmetro 'images' inválido na URL, usando padrão.",
+              err,
+            );
+          }
+          return [
+            "/static/tutorial/Tutorial-Matematica-1.png",
+            "/static/tutorial/Tutorial-Matematica-2.png",
+            "/static/tutorial/Tutorial-Matematica-3.png",
+          ];
+        }
+
+        let tutorialImages = getInitialImages();
 
         const image = document.getElementById("carousel-image");
         const dotsContainer = document.getElementById("carousel-dots");
@@ -112,10 +133,25 @@
         function goToSlide(index) {
           current = (index + tutorialImages.length) % tutorialImages.length;
           image.src = tutorialImages[current];
-          image.alt = `Passo ${current + 1} do tutorial de matemática`;
+          image.alt = `Passo ${current + 1} do tutorial`;
           counter.textContent = `${current + 1} / ${tutorialImages.length}`;
           renderDots();
         }
+
+        function setImages(imgs) {
+          if (!Array.isArray(imgs) || imgs.length === 0) return;
+          tutorialImages = imgs;
+          goToSlide(0);
+        }
+
+        // Permite que a página pai atualize as imagens depois do iframe
+        // já ter carregado, sem precisar recarregar o src.
+        window.addEventListener("message", (event) => {
+          const data = event.data;
+          if (data && data.type === "pokedex:set-tutorial-images") {
+            setImages(data.images);
+          }
+        });
 
         prevBtn.addEventListener("click", () => goToSlide(current - 1));
         nextBtn.addEventListener("click", () => goToSlide(current + 1));

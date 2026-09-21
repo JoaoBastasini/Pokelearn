@@ -11,8 +11,14 @@
 
 <script
   defer
-  src="{{ url_for('static', filename='js/calculadora-widget.js') }}"
-  data-calculator-src="{{ url_for('static', filename='calculadora.html') }}"
+  src="{{ url_for('static', filename='js/pokedex-widget.js') }}"
+  data-calculator-src="{{ url_for('static', filename='pokedex.html') }}"
+  data-tutorial-images='[
+        "/static/tutorial/TutorialMat-Dano1.png",
+        "/static/tutorial/TutorialMat-Dano2.png",
+        "/static/tutorial/TutorialMat-Dano3.png",
+        "/static/tutorial/TutorialMat-Dano4.png",
+        "/static/tutorial/TutorialMat-Dano5.png"]'
 ></script>
 
 <link
@@ -36,7 +42,7 @@
     <button
       data-tutorial-open
       data-tutorial-images='[
-        "/static/tutorial/Tutorial-Calculadora.png",
+        "/static/tutorial/Tutorial-pokedex.png",
         "/static/tutorial/Tutorial-Dano-1.png",
         "/static/tutorial/Tutorial-Dano-2.png",
         "/static/tutorial/Tutorial-Dano-3.png"

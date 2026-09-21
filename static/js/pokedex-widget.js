@@ -1,7 +1,8 @@
 (function () {
   const scriptEl = document.currentScript;
   const calcSrc =
-    (scriptEl && scriptEl.dataset.calculatorSrc) || "/static/calculadora.html";
+    (scriptEl && scriptEl.dataset.calculatorSrc) || "/static/pokedex.html";
+  const tutorialImagesRaw = scriptEl && scriptEl.dataset.tutorialImages;
 
   const ICON_OPEN =
     '<svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="3" fill="currentColor" opacity="0.15"/><rect x="4" y="2" width="16" height="20" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="7" y="5" width="10" height="4" rx="1" fill="currentColor"/><circle cx="8" cy="13" r="1.3" fill="currentColor"/><circle cx="12" cy="13" r="1.3" fill="currentColor"/><circle cx="16" cy="13" r="1.3" fill="currentColor"/><circle cx="8" cy="17" r="1.3" fill="currentColor"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/><circle cx="16" cy="17" r="1.3" fill="currentColor"/></svg>';
@@ -12,39 +13,56 @@
   link.rel = "stylesheet";
   link.href =
     (scriptEl && scriptEl.dataset.calculatorCss) ||
-    "/static/css/calculadora_widget_style.css";
+    "/static/css/pokedex_widget_style.css";
   document.head.appendChild(link);
 
   const btn = document.createElement("button");
   btn.id = "calc-widget-btn";
   btn.type = "button";
-  btn.setAttribute("aria-label", "Abrir calculadora");
+  btn.setAttribute("aria-label", "Abrir pokedex");
   btn.setAttribute("aria-expanded", "false");
-  btn.title = "Calculadora";
+  btn.title = "Pokedex";
   btn.innerHTML = ICON_OPEN;
 
   const panel = document.createElement("div");
   panel.id = "calc-widget-panel";
 
   const iframe = document.createElement("iframe");
-  iframe.title = "Calculadora";
+  iframe.title = "Pokedex";
   panel.appendChild(iframe);
 
   let loaded = false;
   let isOpen = false;
 
+  // Monta a URL do iframe repassando as imagens do tutorial (definidas via
+  // data-tutorial-images na tag <script>) como parâmetro de query string,
+  // que o pokedex.html lê para popular o carrossel.
+  function buildCalculatorSrc() {
+    if (!tutorialImagesRaw) return calcSrc;
+
+    try {
+      JSON.parse(tutorialImagesRaw); // valida antes de repassar
+    } catch (err) {
+      console.warn(
+        "pokedex-widget: data-tutorial-images inválido (JSON malformado), ignorando.",
+        err,
+      );
+      return calcSrc;
+    }
+
+    const separator = calcSrc.includes("?") ? "&" : "?";
+    return `${calcSrc}${separator}images=${encodeURIComponent(tutorialImagesRaw)}`;
+  }
+
   function setOpen(next) {
     isOpen = next;
     if (isOpen && !loaded) {
-      iframe.src = calcSrc;
+      iframe.src = buildCalculatorSrc();
       loaded = true;
     }
     panel.classList.toggle("open", isOpen);
     btn.setAttribute("aria-expanded", String(isOpen));
-    btn.setAttribute(
-      "aria-label",
-      isOpen ? "Fechar calculadora" : "Abrir calculadora",
-    );
+    btn.setAttribute("aria-label", isOpen ? "Fechar pokedex" : "Abrir pokedex");
     btn.innerHTML = isOpen ? ICON_CLOSE : ICON_OPEN;
   }
 

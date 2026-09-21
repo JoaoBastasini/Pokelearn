@@ -27,7 +27,7 @@ Cada tela de minijogo contém a marcação da atividade e o JavaScript responsá
 - comparar a entrada do estudante com a resposta recebida;
 - apresentar o feedback e iniciar uma nova rodada.
 
-Os scripts em `static/js/` implementam recursos reutilizáveis: calculadora flutuante, modal de tutorial e visualização ampliada da tabela de tipos.
+Os scripts em `static/js/` implementam recursos reutilizáveis: pokedex flutuante, modal de tutorial e visualização ampliada da tabela de tipos.
 
 ### Dados
 
@@ -85,7 +85,7 @@ Essa separação permite substituir a interface sem reimplementar as fórmulas. 
 
 - o servidor usa somente arquivos locais e pacotes Python instalados;
 - KaTeX é obtido pelo CDN jsDelivr;
-- a calculadora referencia fontes do Google Fonts;
+- a pokedex referencia fontes do Google Fonts;
 - URLs de imagens de Pokémon vêm do CSV e são carregadas pelo navegador.
 
 A PokeAPI não participa da geração cotidiana dos desafios. Ela é consultada apenas quando os scripts de preparação de dados são executados.
