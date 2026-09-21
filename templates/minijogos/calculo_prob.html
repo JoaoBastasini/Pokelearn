@@ -14,9 +14,16 @@
   defer
   src="{{ url_for('static', filename='js/pokedex-widget.js') }}"
   data-calculator-src="{{ url_for('static', filename='pokedex.html') }}"
+  data-tutorial-images='[
+        "/static/tutorial/TutorialMat-prob.png",
+         "/static/tutorial/TutorialMat-Poten.png",
+          "/static/tutorial/TutorialMat-Desiguald.png"
+        ]'
 ></script>
 <link rel="stylesheet" href="/static/css/tutorial.css" />
+
 <script defer src="/static/js/tutorial.js"></script>
+
 {% endblock %} {% block content %}
 <div class="titulo">Chance de Captura</div>
 <div class="container">

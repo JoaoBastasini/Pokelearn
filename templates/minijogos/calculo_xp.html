@@ -6,19 +6,31 @@
   rel="stylesheet"
   href="{{ url_for('static', filename='css/geral_style.css') }}"
 />
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js"></script>
+
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css"
 />
+
 <script
   defer
   src="{{ url_for('static', filename='js/pokedex-widget.js') }}"
   data-calculator-src="{{ url_for('static', filename='pokedex.html') }}"
+  data-tutorial-images='[
+        "/static/tutorial/TutorialMat-XP.png",
+         "/static/tutorial/TutorialMat-Poten.png",
+          "/static/tutorial/TutorialMat-Desiguald.png"
+        ]'
 ></script>
+
 <link rel="stylesheet" href="/static/css/tutorial.css" />
+
 <script defer src="/static/js/tutorial.js"></script>
+
 <title>Cálculo de XP</title>
+
 {% endblock %} {% block content %}
 <div class="titulo">Cálculo de XP</div>
 
