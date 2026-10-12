@@ -14,6 +14,16 @@ endblock %} {% block extra_css %}
   defer
   src="{{ url_for('static', filename='js/pokedex-widget.js') }}"
   data-calculator-src="{{ url_for('static', filename='pokedex.html') }}"
+  data-tutorial-images='[        
+        "/static/tutorial/TutorialMat-PE1.png",
+        "/static/tutorial/TutorialMat-Poten.png",
+        "/static/tutorial/TutorialMat-PE2.png",
+        "/static/tutorial/TutorialMat-PE3.png",
+        "/static/tutorial/TutorialMat-PE4.png",
+        "/static/tutorial/TutorialMat-Somatorio.png",
+        "/static/tutorial/TutorialMat-DistBinomial.png",
+        "/static/tutorial/TutorialMat-fatorial.png"
+        ]'
 ></script>
 <link rel="stylesheet" href="/static/css/tutorial.css" />
 <script defer src="/static/js/tutorial.js"></script>
